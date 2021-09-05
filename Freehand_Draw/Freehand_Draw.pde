@@ -27,24 +27,9 @@ void setup() {
 //===================================================
 void draw() {
 
+  drawGrid();
   // Clear the canvas, init the PEmbroiderGraphics
-  background(200);
-  stroke(155);
-    for (int x = 0; x < width ; x += 50){
-    line(x, 0, x, height);
-  }
-  for (int y = 0; y < height ; y+= 50){
-    line(0, y, width, y);
-  }
-    stroke(255);
-    for (int x = 0; x < width ; x += 100){
-    line(x, 0, x, height);
-  }
-  for (int y = 0; y < height ; y+=100){
-    line(0, y, width, y);
-  }
-  
-  
+   
   E.beginDraw(); 
   E.clear();
   E.noFill(); 
@@ -112,5 +97,30 @@ void keyPressed() {
     save("prev.png");
     E.printStats(); 
     E.endDraw(); // write out the file
+  }
+}
+
+void drawGrid(){
+  background(200);
+  stroke(190);
+  for (int x = 0; x < width ; x += 10){
+    line(x, 0, x, height);
+  }
+  for (int y = 0; y < height ; y+= 10){
+    line(0, y, width, y);
+  }
+  stroke(155);
+  for (int x = 0; x < width ; x += 50){
+    line(x, 0, x, height);
+  }
+  for (int y = 0; y < height ; y+= 50){
+    line(0, y, width, y);
+  }
+    stroke(255);
+  for (int x = 0; x < width ; x += 100){
+    line(x, 0, x, height);
+  }
+  for (int y = 0; y < height ; y+=100){
+    line(0, y, width, y);
   }
 }
