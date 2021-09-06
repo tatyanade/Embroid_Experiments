@@ -1,7 +1,11 @@
 // Doodle recorder for the PEmbroider library for Processing!
 // Press 's' to save the embroidery file. Press space to clear.
 
-
+String extension = ".pes";
+String filename = "test";
+String name;
+boolean safeNaming = true; // makes sure u dont overwrite; turn false to have filename be just extension with no timestamp or version number
+int count = 0;
 
 import processing.embroider.*;
 PEmbroiderGraphics E;
@@ -9,16 +13,27 @@ PEmbroiderGraphics E;
 ArrayList<PVector> currentMark;
 ArrayList<ArrayList<PVector>> marks;
 
-String mode = "embroidery";
-
+int mode = 0;
+// 0 = emb
+// 1 = sketch
 int[] sketchPoints = {};
 
 //===================================================
 void setup() { 
+  
   size (1400, 900);
   E = new PEmbroiderGraphics(this, width, height);
-  String outputFilePath = sketchPath("PEmbroider_interactive_demo_2.pes");
-  E.setPath(outputFilePath);
+
+
+  if (safeNaming == true){
+      name = filename + str(hour()) + "_" + str(minute()) + "_" + str(second());
+      String outputFilePath = sketchPath(name + "v" + count + extension);
+      E.setPath(outputFilePath);
+  } else {
+      name = filename;
+      String outputFilePath = sketchPath(name + extension);
+      E.setPath(outputFilePath);
+  }
 
   currentMark = new ArrayList<PVector>();
   marks = new ArrayList<ArrayList<PVector>>();
@@ -28,11 +43,15 @@ void setup() {
 }
 
 void drawSketch(){
-  beginShape(POINTS);
- for (int i = 0; i < sketchPoints.length ; i+=2){
-   
- }
+  stroke(225,225,0);
+ 
+   beginShape(POINTS);
   
+   println(sketchPoints);
+   for (int i = 0; i < sketchPoints.length -1 ; i+=2){
+     vertex( sketchPoints[i], sketchPoints[i+1]);
+   }
+   endShape();
 }
 //===================================================
 void draw() {
@@ -72,7 +91,7 @@ void draw() {
   // and draw the current mark
   if (mousePressed) {
     
-    //if( mode == "emboidery"){
+    if( mode == 0){
       currentMark.add(new PVector(mouseX, mouseY));
       
       E.beginShape(); 
@@ -81,11 +100,11 @@ void draw() {
         E.vertex (ithPoint.x, ithPoint.y) ;
       }
       E.endShape();
-    //}
-    //else if (mode == "sketching"){
-    //  sketchPoints[sketchPoints.length + 1] = mouseX;
-    //  sketchPoints[sketchPoints.length + 1] = mouseY;
-    //}
+    }
+    else if (mode == 1){
+      sketchPoints[sketchPoints.length + 1] = mouseX;
+      sketchPoints[sketchPoints.length + 1] = mouseY;
+    }
   }
 
   E.visualize(true,true,true);
@@ -107,20 +126,34 @@ void mouseReleased() {
 
 //===================================================
 void keyPressed() {
-  if (key == 'r'){
-   mode = "sketching"; 
+  if (key == 'q'){
+   mode = 1; 
   }
   if (key == 'e'){
-    mode = "embroidery";
+    mode = 0;
   }
   if (key == ' ') {
     currentMark.clear(); 
     marks.clear();
+    setup();
+    count = 0;
   } else if (key == 's' || key == 'S') { // S to save
+  
     //E.optimize(); // slow, but very good and important
-    save("prev.png");
-    E.printStats(); 
-    E.endDraw(); // write out the file
+
+    if (safeNaming == true){
+      save(name + "v" + count +".png");
+      count+=1;
+      E.endDraw(); // write out the file
+      String outputFilePath = sketchPath(name + "v" + count + extension);
+      E.setPath(outputFilePath);
+  } else {
+      save(name + ".png");
+      E.endDraw(); // write out the file
+  }
+  
+
+
   }
 }
 
