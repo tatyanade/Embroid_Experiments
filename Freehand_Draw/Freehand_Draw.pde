@@ -9,6 +9,10 @@ PEmbroiderGraphics E;
 ArrayList<PVector> currentMark;
 ArrayList<ArrayList<PVector>> marks;
 
+String mode = "embroidery";
+
+int[] sketchPoints = {};
+
 //===================================================
 void setup() { 
   size (1400, 900);
@@ -23,11 +27,19 @@ void setup() {
 
 }
 
-
+void drawSketch(){
+  beginShape(POINTS);
+ for (int i = 0; i < sketchPoints.length ; i+=2){
+   
+ }
+  
+}
 //===================================================
 void draw() {
 
   drawGrid();
+  
+  drawSketch();
   // Clear the canvas, init the PEmbroiderGraphics
    
   E.beginDraw(); 
@@ -59,14 +71,21 @@ void draw() {
   // add the latest mouse point to current mark,
   // and draw the current mark
   if (mousePressed) {
-    currentMark.add(new PVector(mouseX, mouseY));
     
-    E.beginShape(); 
-    for (int i=0; i<currentMark.size(); i++) {
-      PVector ithPoint = currentMark.get(i); 
-      E.vertex (ithPoint.x, ithPoint.y) ;
-    }
-    E.endShape();
+    //if( mode == "emboidery"){
+      currentMark.add(new PVector(mouseX, mouseY));
+      
+      E.beginShape(); 
+      for (int i=0; i<currentMark.size(); i++) {
+        PVector ithPoint = currentMark.get(i); 
+        E.vertex (ithPoint.x, ithPoint.y) ;
+      }
+      E.endShape();
+    //}
+    //else if (mode == "sketching"){
+    //  sketchPoints[sketchPoints.length + 1] = mouseX;
+    //  sketchPoints[sketchPoints.length + 1] = mouseY;
+    //}
   }
 
   E.visualize(true,true,true);
@@ -88,10 +107,15 @@ void mouseReleased() {
 
 //===================================================
 void keyPressed() {
+  if (key == 'r'){
+   mode = "sketching"; 
+  }
+  if (key == 'e'){
+    mode = "embroidery";
+  }
   if (key == ' ') {
     currentMark.clear(); 
     marks.clear();
-    
   } else if (key == 's' || key == 'S') { // S to save
     //E.optimize(); // slow, but very good and important
     save("prev.png");
