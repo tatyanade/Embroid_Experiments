@@ -18,14 +18,22 @@ int lastStitchTime = 0;
 String fileType = ".pes";
 String fileName = "circ_along_Pemb_path"; // CHANGE ME
 
+// LOOP VARIABLES ///
+boolean loop = false;
+int frame = 0;
+int overlaps = 0;
+
 
 void setup() {
   size(800, 800);
-
+  if (!loop) {
+    noLoop();
+  }
+  
   //// DEFINE EMBROIDERY DESIGN HERE ////////////////// <------------------------------------------------ CHANGE HERE ----------------------
   E = new PEmbroiderGraphics(this, width, height);
   E.beginDraw();
-  
+
   E2 = new PEmbroiderGraphics(this, width, height);
   E2.beginDraw();
   String outputFilePath = sketchPath(fileName+fileType);
@@ -38,27 +46,32 @@ void setup() {
   E.noStroke();
   E.fill(0, 0, 0);
   E.noStroke();
-  E.circle(width/2,height/2, 250);
+  E.circle(width/2, height/2, 250);
   int lenE = ndLength(E);
   PVector pointLoc = new PVector();
-  
-  
-  // This loop goes through each point on in E and draws a circle on top of them
-  for(int i = 0; i < lenE; i++){
-    pointLoc = getNeedleDown(E,i);
-    E2.circle(pointLoc.x,pointLoc.y,10);
-  }
-  
 
-  E.visualize(true,true,true);
+
+  // This loop goes through each point on in E and draws a circle on top of them
+  for (int i = 0; i < lenE; i++) {
+    pointLoc = getNeedleDown(E, i);
+    E2.circle(pointLoc.x, pointLoc.y, 10);
+  }
+
+
+  E.visualize(true, true, true);
   E2.visualize();
   E2.endDraw();
+  save(fileName+".png"); //saves a png of design from canvas
 }
 
 
 void draw() {
-  
-;
+  if (loop) {
+    background(100);
+    E2.visualize(true, true, true, frame);
+    frame ++;
+    delay(40);
+  }
 }
 
 
