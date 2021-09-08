@@ -7,15 +7,6 @@
 // E is just a refference object and E2 writes out
 
 
-
-/// EMBROIDOTRON SETUP ///
-import processing.serial.*;
-Serial arduino; 
-int s1 = 0;
-int s2 = 0;
-int totalSteps = 0;
-PVector zeroPoint;
-
 /// PEMBROIDER SETUP///
 import processing.embroider.*;
 PEmbroiderGraphics E;
@@ -23,10 +14,9 @@ PEmbroiderGraphics E2;
 int stitchPlaybackCount = 0;
 int lastStitchTime = 0;
 
-/// DEBUGGING BOOLEANS ///
-boolean doSend = true; // for testing without actually sending points set to false (motors will not move if false)
-boolean serialConnected = true; // for testing without connection to arduino set to false 
-boolean penPlotter = false;
+/// FILE NAME /////
+String fileType = ".pes";
+String fileName = "circ_along_Pemb_path"; // CHANGE ME
 
 
 void setup() {
@@ -38,6 +28,8 @@ void setup() {
   
   E2 = new PEmbroiderGraphics(this, width, height);
   E2.beginDraw();
+  String outputFilePath = sketchPath(fileName+fileType);
+  E2.setPath(outputFilePath);
 
   E.setStitch(10, 20, 0);
   E.hatchSpacing(8);
@@ -45,24 +37,22 @@ void setup() {
 
   E.noStroke();
   E.fill(0, 0, 0);
-  E.pushMatrix();
   E.noStroke();
   E.circle(width/2,height/2, 250);
   int lenE = ndLength(E);
   PVector pointLoc = new PVector();
-  // This function will go through each point on the PEmbroiderGraphics object and modify or draw based on those points
-  // 
+  
+  
+  // This loop goes through each point on in E and draws a circle on top of them
   for(int i = 0; i < lenE; i++){
     pointLoc = getNeedleDown(E,i);
-    point(pointLoc.x,pointLoc.y);
     E2.circle(pointLoc.x,pointLoc.y,10);
   }
-  
-  E.popMatrix();
   
 
   E.visualize(true,true,true);
   E2.visualize();
+  E2.endDraw();
 }
 
 
