@@ -7,15 +7,16 @@ boolean debugging = false;
 
 void setup() {
   noLoop(); 
-  size (1250, 1000);
+  size (1250, 1600);
   
   E = new PEmbroiderGraphics(this, width, height);
-  String outputFilePath = sketchPath("PEmbroider_shape_culling.pes");
+  String outputFilePath = sketchPath("PEmbroider_shape_culling2.pes");
   E.setPath(outputFilePath);
  
   E.beginDraw(); 
   E.clear();
   
+  //E.scale(2);
   /// CULL 1 /////////////////////////////
   E.fill(0, 0, 0); 
   
@@ -30,7 +31,7 @@ void setup() {
   E.translate(width/2, height/2);
   E.hatchAngleDeg(45); 
   E.setStitch(30,50,.1);
-  E.circle(0, 0, 600);
+  E.circle(0, 0, 800);
   E.popMatrix();
   
   // From Mossy Stitching
@@ -56,7 +57,7 @@ void setup() {
   E.rotate(3);
   E.hatchAngleDeg(45); 
   E.setStitch(30,50,.1);
-  E.circle(0, 0, 600);
+  E.circle(0, 0, 800);
   E.popMatrix();
   
   // From Mossy Stitching
