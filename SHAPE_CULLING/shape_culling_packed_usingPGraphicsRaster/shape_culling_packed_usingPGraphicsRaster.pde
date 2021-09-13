@@ -1,7 +1,7 @@
 /// Basic PEmbroidery Setup
 import processing.embroider.*;
 String fileType = ".pes";
-String fileName = "FrenchKnotty_Packed3"; // CHANGE ME
+String fileName = "FrenchKnotty_Packed4"; // CHANGE ME
 PEmbroiderGraphics E;
 
 
@@ -15,7 +15,7 @@ Pack p;
 void setup() {
   size(1200, 1600); //100 px = 1 cm (so 14.2 cm is 1420px)
   PEmbroiderStart();
-  p = new Pack(13, 125, 300);
+  p = new Pack(5, 100, 170);
 }
 
 
@@ -35,75 +35,74 @@ void draw() {
 
 
     /// begin shape cull
-    int numCull = 3; // number of layers for culled shape
-    E.CULL_SPACING = 13;
+    int cullLayers = 7; // number of layers for culled shape
 
-    // CULL 1
-    for (int j = 0; j<numCull; j++) {
-      E.hatchMode(PEmbroiderGraphics.PERLIN);
-      E.hatchSpacing(4); // decrease per cull (min is 3)
-      E.fill(0);
-      E.beginCull();
-      E.pushMatrix();
-      E.translate(width/2, height/2);
-      E.rotate(3); // rotate by some amount per cull
-      E.hatchAngleDeg(45); 
-      E.setStitch(40, 60, .1); // increase the stitch length per cull number
-      E.circle(0, 0, 800);
-      E.popMatrix();
+    for (int j = 0; j<cullLayers; j++) {
 
+      PGraphics pg = createGraphics(width, height);
+      pg.beginDraw();
+      pg.background(0);
+      pg.noStroke();
 
+      pg.pushMatrix();
+      pg.translate(width/2, height/2);
+      pg.fill(255);
+      pg.circle(0, 0, 400);
+      pg.popMatrix();
 
-
+      pg.fill(0);
       for (int i=0; i<p.circles.size(); i++) {
         Circle circ = p.circles.get(i);
-        drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true);
+        drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true, pg);
       }
-      E.endCull();
+
+      pg.endDraw();
+      E.beginOptimize();
+      
+      if (j==0) {
+        E.fill(0,40,0);
+        E.hatchSpacing(6); // decrease per cull (min is 3)
+        //setFieldFill(E, j*2,10);
+        E.hatchMode(E.CONCENTRIC);
+        E.setStitch(20, 30, .1);
+        E.hatchRaster(pg);
+      } else {
+        E.fill(0,40+j*30,0);
+        E.hatchSpacing(4); // decrease per cull (min is 3)
+        setFieldFill(E, j*2,10+j);
+        E.setStitch(60*j*10, 100+j*10, .1);
+        setFieldFill(E, j*2,20);
+        E.setStitch(100, 140, .1);
+        E.hatchRaster(pg);
+      }
+      E.endOptimize();
     }
-
-    // CULL 2
-    E.hatchMode(PEmbroiderGraphics.PERLIN);
-    E.hatchSpacing(4);
-    E.fill(0);
-    E.beginCull();
-    E.pushMatrix();
-    E.translate(width/2, height/2);
-    E.rotate(7);
-    E.hatchAngleDeg(45); 
-    E.setStitch(40, 60, .1);
-    E.circle(0, 0, 800);
-    E.popMatrix();
-
-
-
-
-    for (int i=0; i<p.circles.size(); i++) {
-      Circle circ = p.circles.get(i);
-      drawMossyCircle(E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true);
-    }
-    E.endCull();
-
 
     /// end shape cull
 
+    E.beginOptimize();
 
     for (int i=0; i<p.circles.size(); i++) {
       Circle circ = p.circles.get(i);
-      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, false);
+      drawMossyCircle(E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, false, null);
     }
+    E.endOptimize();
 
 
-
-    /// end shape culling
 
     /// END DRAW EMBROIDERY ///////////////////////////////
 
-    // E.optimize();
+
     PEmbroiderWrite();
+   // checkStitchDens(E);
     noLoop();
   }
 }
+
+
+
+
+
 
 
 void keyPressed() {
@@ -123,46 +122,12 @@ void PEmbroiderStart() {
 }
 
 void PEmbroiderWrite() {
-  E.visualize(true, false, false);//true, true, true);
+  E.visualize(true, true, true);//true, true, true);
   E.endDraw(); // write out the file
   save(fileName+".png"); //saves a png of design from canvas
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-/// Knot Functions
-
-void drawKnot1(PEmbroiderGraphics E, int rad, int x, int y) {
-  E.pushMatrix();
-  E.translate(x, y);
-
-  //E.strokeWeight(4);
-  E.circle(0, 0, rad*2);
-
-  // E.strokeWeight(1);
-  // drawStarKnot(E, int(rad*1.3/2.00), 7); // .57
-  ////drawStarKnot(E, int(rad*25.0/35.0), 13); // .714
-  //E.rotate(PI/11);
-  //drawStarKnot(E, int(rad*30.0/35.0), 23); // .85
-  //drawStarKnot(E, int(rad*35.0/35.0), 23); // 1
-  E.popMatrix();
-}
-
-
-void drawStarKnot(PEmbroiderGraphics E, int rad, int steps) {
-  float stepSize = PI*2/float(steps);
-  float angleDif = PI;
-  for (int i = 0; i<steps; i++) {
-    if (i%2==0) {
-      connectPointsOnCircle(E, stepSize*float(i), stepSize*float(i)+angleDif, rad);
-    } else {
-      connectPointsOnCircle(E, stepSize*float(i)+angleDif, stepSize*float(i), rad);
-    }
-  }
-}
 
 
 void connectPointsOnCircle(PEmbroiderGraphics E, float th1, float th2, int rad) {
@@ -181,14 +146,20 @@ void connectPointsOnCircle(PEmbroiderGraphics E, float th1, float th2, int rad) 
 ///////////////////// MOSSY HELPERS ////////////////////////////////////
 
 
-void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, int z, boolean doCull) {
+void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, int z, boolean doCull, PGraphics pg) {
 
 
   ///// stitching parameters ////
   E.noFill();
+  // E.noStroke();
   E.stroke(0, 0, 0); 
-  E.strokeWeight(1);
-  E.setStitch(20, 300, 0);
+  E.strokeLocation(E.INSIDE);
+  E.setStitch(20, 40, 0);
+  E.hatchSpacing(20);
+  E.strokeSpacing(15);
+  E.strokeMode(E.TANGENT);
+  E.hatchMode(E.CONCENTRIC);
+  E.strokeWeight(5);
   ///// stitching parameters ////
 
   float theta = 0; // convert to radians
@@ -215,100 +186,45 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   E.pushMatrix();
   E.translate(x, y);
 
-  E.noFill();
-  E.strokeWeight(1);
-  E.stroke(20);
-
   E.beginShape();
   if (!doCull) {
-    while (thSteps < PI*2) {
-      int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
-      int offsetIn = int(noiseLoop(1, thSteps/(2*PI), .5+z)*offset);
-      if (i%2 == 0) {
-        connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
-      } else {
-        connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
-      }
-      thSteps += thStep;//random(0,thStep);
-      i++;
-    }
-  } else {
-    E.hatchMode(PEmbroiderGraphics.PARALLEL); 
-    E.hatchSpacing(5);
-    E.fill(170);
-    E.setStitch(10, 20, .1);
-    E.noStroke();
     E.beginShape();
-    thSteps = 0;
     while (thSteps < PI*2) {
       int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
       PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
       E.vertex(p.x, p.y);
+      thSteps += thStep;
+      i++;
 
+
+
+
+      //int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
+      //int offsetIn = int(noiseLoop(1, thSteps/(2*PI), .5+z)*offset);
       //if (i%2 == 0) {
-      // connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
+      //  connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
       //} else {
-      // connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
+      //  connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
       //}
-      thSteps += thStep;//random(0,thStep);
+      //thSteps += thStep;//random(0,thStep);
+      //i++;
+    }
+
+    E.endShape(true);
+  } else {
+    thSteps = 0;
+    pg.pushMatrix();
+    pg.translate(x, y);
+    pg.beginShape();
+    while (thSteps < PI*2) {
+      int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
+      PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
+      pg.vertex(p.x, p.y);
+      thSteps += thStep;
       i++;
     }
-  }
-  E.endShape(CLOSE);
-
-  E.popMatrix();
-}
-
-
-
-
-
-
-void drawMossyCircle_CULL( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, int z) {
-
-
-  ///// stitching parameters ////
-  E.noFill();
-  E.stroke(0, 0, 0); 
-  E.strokeWeight(1);
-  E.setStitch(20, 300, 0);
-  ///// stitching parameters ////
-
-
-  float theta = 0; // convert to radians
-  float offset = 50;
-
-  if (diam2 <50) {
-    diam2 = 50;
-  }
-
-  float ar = 2; // arc length of steps along interior circle
-  float thStep = ar*2/(float(diam2)+30*offset/float(diam2));//
-  float thSteps = 0;
-  int i = 0;
-
-  E.pushMatrix();
-  E.translate(x, y);
-
-  E.hatchMode(PEmbroiderGraphics.PARALLEL); 
-  E.hatchSpacing(5);
-  E.fill(170);
-  E.setStitch(10, 20, .1);
-  E.noStroke();
-  E.beginShape();
-  thSteps = 0;
-  while (thSteps < PI*2) {
-    int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*50.00);
-    PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
-    E.vertex(p.x, p.y);
-
-    //if (i%2 == 0) {
-    // connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
-    //} else {
-    // connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
-    //}
-    thSteps += thStep;//random(0,thStep);
-    i++;
+    pg.endShape();
+    pg.popMatrix();
   }
   E.endShape(CLOSE);
 
@@ -360,6 +276,116 @@ float noiseLoop(float rad, float t, float z) {
 
 
 //////////////////////////////////////////////////////////////////////////////
+
+
+///////////////Field Fill Helpers /////////////////////////
+
+void setFieldFill(PEmbroiderGraphics E, float z, float len) {
+
+  MyVecField mvf = new MyVecField(z,len);
+  E.hatchMode(PEmbroiderGraphics.VECFIELD);
+  E.HATCH_VECFIELD = mvf;
+}
+
+
+
+class MyVecField implements PEmbroiderGraphics.VectorField {
+  float z;
+  float len;
+  MyVecField(float z,float len) {
+    this.z = z;
+    this.len = len;
+  }
+  public PVector get(float x, float y) {
+    x*=0.01;
+    y*=0.01;
+    return new PVector(0, len).rotate(noise(x, y, z)*2*PI);
+  }
+}
+
+
+////////////////////////////////////////////////////////////////
+
+
+////////////////////// NEEDLE DOWN HELPERS ////////////////////////////////////////////////////////////
+
+PVector getNeedleDown(PEmbroiderGraphics E, int ndIndex) {
+  //get the ith needle down
+  int n = 0;
+  for (int i=0; i<E.polylines.size(); i++) {
+    for (int j=0; j<E.polylines.get(i).size(); j++) {
+      PVector needleLoc = E.polylines.get(i).get(j).copy();
+      if (n >= ndIndex) {
+        return needleLoc;
+      }
+      n++;
+    }
+  }
+  return null; //will return null if the index is outside the needle down list
+}
+
+int ndLength(PEmbroiderGraphics E) {
+  //return the total number of needle downs in the job
+  int n = 0;
+  for (int i=0; i<E.polylines.size(); i++) {
+    for (int j=0; j<E.polylines.get(i).size(); j++) {
+      n++;
+    }
+  }
+  return n;
+}
+
+
+void checkStitchDens(PEmbroiderGraphics E) {
+  int rows = height/10;
+  int cols = width/10;
+  float heightOffset = height/rows;
+  float widthOffset = width/cols;
+
+  println("Sample size:");
+  println(str(widthOffset) + " x " + str(heightOffset));
+  int stitchCounters[][] = new int[rows][cols];
+
+  int lenE = ndLength(E);
+  PVector pointLoc = new PVector();
+  int maxStitches = 0;
+
+  // This loop goes through each point on in E counts how many times the needle down falls within a certain stitch counter
+  for (int i = 0; i < lenE; i++) {
+    pointLoc = getNeedleDown(E, i);
+    int col = int(pointLoc.x/widthOffset);
+    int row = int(pointLoc.y/heightOffset);
+    stitchCounters[row][col]++;
+  }
+
+  for (int row=0; row < rows; row ++) {
+    for (int col=0; col < cols; col++) {
+      int r = int(float(stitchCounters[row][col])*10);
+      if (maxStitches<stitchCounters[row][col]) {
+        maxStitches =stitchCounters[row][col];
+      }
+      noStroke();
+      fill(r, 0, 0);
+      rect(col*widthOffset, row*heightOffset, widthOffset, heightOffset);
+    }
+  }
+
+
+  for (int i = 0; i < lenE; i++) {
+    pointLoc = getNeedleDown(E, i);
+    fill(255);
+    stroke(255, 255, 255, 40);
+    point(pointLoc.x, pointLoc.y);
+  }
+
+  println("Max Stitches:");
+  println(maxStitches);
+}
+
+////////////////////// END NEEDLE DOWN HELPERS /////////////////////////////////////////////////////////
+
+
+
 
 
 

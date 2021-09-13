@@ -15,7 +15,7 @@ Pack p;
 void setup() {
   size(1200, 1600); //100 px = 1 cm (so 14.2 cm is 1420px)
   PEmbroiderStart();
-  p = new Pack(13, 125, 300);
+  p = new Pack(20, 100, 225);
 }
 
 
@@ -35,62 +35,83 @@ void draw() {
 
 
     /// begin shape cull
-    int numCull = 3; // number of layers for culled shape
-    E.CULL_SPACING = 13;
+    E.CULL_SPACING = 10;
+
+    // CULL .5
+    E.hatchMode(PEmbroiderGraphics.PERLIN);
+    E.hatchSpacing(20);
+    E.fill(0);
+    E.beginCull();
+    E.pushMatrix();
+    E.translate(width/2, height/2);
+    E.rotate(0);
+    E.hatchAngleDeg(45); 
+    E.setStitch(15, 25, .1);
+    E.circle(0, 0, 800);
+    E.popMatrix();
+
+    
+
+
+    for (int i=0; i<p.circles.size(); i++) {
+      Circle circ = p.circles.get(i);
+      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-70)/3), i, true);
+    }
+    E.endCull();
 
     // CULL 1
-    for (int j = 0; j<numCull; j++) {
-      E.hatchMode(PEmbroiderGraphics.PERLIN);
-      E.hatchSpacing(4); // decrease per cull (min is 3)
-      E.fill(0);
-      E.beginCull();
-      E.pushMatrix();
-      E.translate(width/2, height/2);
-      E.rotate(3); // rotate by some amount per cull
-      E.hatchAngleDeg(45); 
-      E.setStitch(40, 60, .1); // increase the stitch length per cull number
-      E.circle(0, 0, 800);
-      E.popMatrix();
+    E.hatchMode(PEmbroiderGraphics.PERLIN);
+    E.hatchSpacing(5);
+    E.fill(0);
+    E.beginCull();
+    E.pushMatrix();
+    E.translate(width/2, height/2);
+    E.rotate(3);
+    E.hatchAngleDeg(45); 
+    E.setStitch(30, 50, .1);
+    E.circle(0, 0, 800);
+    E.popMatrix();
+
+    
 
 
-
-
-      for (int i=0; i<p.circles.size(); i++) {
-        Circle circ = p.circles.get(i);
-        drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true);
-      }
-      E.endCull();
+    for (int i=0; i<p.circles.size(); i++) {
+      Circle circ = p.circles.get(i);
+      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-70)/3), i, true);
     }
-
+    E.endCull();
+    
     // CULL 2
     E.hatchMode(PEmbroiderGraphics.PERLIN);
-    E.hatchSpacing(4);
+    E.hatchSpacing(3);
     E.fill(0);
     E.beginCull();
     E.pushMatrix();
     E.translate(width/2, height/2);
     E.rotate(7);
     E.hatchAngleDeg(45); 
-    E.setStitch(40, 60, .1);
+    E.setStitch(60, 80, .1);
     E.circle(0, 0, 800);
     E.popMatrix();
 
-
+    
 
 
     for (int i=0; i<p.circles.size(); i++) {
       Circle circ = p.circles.get(i);
-      drawMossyCircle(E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true);
+      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-70)/3), i, true);
     }
     E.endCull();
-
-
+    
+    E.optimize();
+    
+    
     /// end shape cull
 
 
     for (int i=0; i<p.circles.size(); i++) {
       Circle circ = p.circles.get(i);
-      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, false);
+      drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-70)/3), i, false);
     }
 
 
@@ -99,7 +120,7 @@ void draw() {
 
     /// END DRAW EMBROIDERY ///////////////////////////////
 
-    // E.optimize();
+     E.optimize();
     PEmbroiderWrite();
     noLoop();
   }
@@ -123,7 +144,7 @@ void PEmbroiderStart() {
 }
 
 void PEmbroiderWrite() {
-  E.visualize(true, false, false);//true, true, true);
+  E.visualize(true, true, true);//true, true, true);
   E.endDraw(); // write out the file
   save(fileName+".png"); //saves a png of design from canvas
 }
