@@ -1,7 +1,7 @@
 // TODO: implement a more tunable perlin noise fill using the PEmbroiderGraphics.VECFIELD 
 import processing.embroider.*;
 String fileType = ".pes";
-String fileName = ""; // CHANGE ME
+String fileName = "spiral_image"; // CHANGE ME
 PEmbroiderGraphics E;
 
 int frame;
@@ -31,13 +31,13 @@ void drawBlackAndWhite(){
   E.pushMatrix();
   E.translate(width/2, height/2);
   float theta = 1;
-  float stepLen = 2;
-  int steps = 25*1000;
+  float stepLen = 3;
+  int steps = 10*1000;
   E.stroke(0);
   E.setStitch(40, 40, .1);
   E.beginShape();
   for (int i=1; i<=steps; i++) {
-    float r = theta;
+    float r = theta*1.8;
     float thetaStep = stepLen/r;
     PVector coord = radi2card(r+offset(r, theta, i), theta);
     E.vertex(coord.x, coord.y);
@@ -48,6 +48,7 @@ void drawBlackAndWhite(){
  // E.endDraw();
   E.visualize(true,false,false);
   println(maxBrightness);
+  E.endDraw();
 }
 
 

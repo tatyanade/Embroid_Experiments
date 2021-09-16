@@ -82,6 +82,7 @@ void setup() {
   
   
   E = new PEmbroiderGraphics(this, width, height);
+  E.setPath(sketchPath("Voronoi.pes"));
   E.beginDraw();
   
 }
@@ -148,7 +149,9 @@ void draw() {
       i++;
       println(i);
     }
-    E.visualize();
+    E.optimize();
+    E.visualize(true,true,true);
+    E.endDraw();
     noLoop();
   }
 }
