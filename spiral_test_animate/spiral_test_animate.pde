@@ -5,48 +5,57 @@ String fileName = ""; // CHANGE ME
 PEmbroiderGraphics E;
 
 int frame;
+int nFrames = 70;
 
- PImage img;
+
+int kStitches = 5; // thousands of stitches
+float spiralSpacing = 2;
+float initTheta = 0;
+ 
 
 
 
 void setup() {
-  size(1024, 675); //100 px = 1 cm (so 14.2 cm is 1420px)
+  size(480, 640); //100 px = 1 cm (so 14.2 cm is 1420px)
   PEmbroiderStart();
-  frameRate(30);
-  noLoop();
-  img = loadImage("pearlEaring.jpg");
-  img.loadPixels();
-  
-  drawBlackAndWhite();
+  frameRate(10);
+
 }
 
 void draw() {
-  ;
+  String imageFilename = "frame" + nf((frame%nFrames+1), 3) + ".png";
+  drawBlackAndWhite(imageFilename);
+  frame++;
 }
 
 
-void drawBlackAndWhite(){
-    background(255);
+void drawBlackAndWhite(String imageFilename){
+  PImage img;
+  img = loadImage(imageFilename);
+  img.loadPixels();
+  background(255);
+  E.clear();
   E.pushMatrix();
   E.translate(width/2, height/2);
-  float theta = 1;
-  float stepLen = 2;
-  int steps = 25*1000;
+  float theta = PI;
+  float stepLen = 3;
+  int steps = kStitches*1000;
   E.stroke(0);
   E.setStitch(40, 40, .1);
+  initTheta = noise(frame*.01)*2*PI; // rotates the spiral without affecting the roation of the graphic
+  println(initTheta);
   E.beginShape();
   for (int i=1; i<=steps; i++) {
-    float r = theta;
+    float r = theta*spiralSpacing;
     float thetaStep = stepLen/r;
-    PVector coord = radi2card(r+offset(r, theta, i), theta);
+    PVector coord = radi2card(r+offset(r, theta+initTheta, i, img), theta+initTheta);
     E.vertex(coord.x, coord.y);
     theta+= thetaStep;
   }
   E.endShape();
   E.popMatrix();
  // E.endDraw();
-  E.visualize(true,false,false);
+  E.visualize(true,true,true);
   println(maxBrightness);
 }
 
@@ -63,21 +72,15 @@ float getPixelBrightness(PImage img, int x, int y){
   return b;    
 }
 
-float offset(float r, float theta, int i) {
+float offset(float r, float theta, int i, PImage img) {
   PVector coord = radi2card(r,theta).add(new PVector(width/2,height/2));
   float bright = getPixelBrightness(img,int(coord.x),int(coord.y));
-  float off = (300-bright)/300*5;
-  if (i%2 == 0) {
-    return -1*off;
+  
+  float off = bright/255*2; // THIS CODE CURRENTLY WORKS BEST WITH SILHOUTTES OF WHITE ON BLACK
+  if(off > 0){
+    // add some randomness 
+    off += noise(theta,frame*.5)*3;
   }
-  return off;
-}
-
-
-float offset2(float r, float theta, int i) {
-  PVector coord = radi2card(r,theta).add(new PVector(width/2,height/2));
-  float bright = getPixelBrightness(img,int(coord.x),int(coord.y));
-  float off = bright/255*5;
   if (i%2 == 0) {
     return -1*off;
   }
