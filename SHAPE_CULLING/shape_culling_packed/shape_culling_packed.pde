@@ -1,7 +1,7 @@
 /// Basic PEmbroidery Setup
 import processing.embroider.*;
 String fileType = ".pes";
-String fileName = "FrenchKnotty_Packed3"; // CHANGE ME
+String fileName = "shape_culling_packed"; // CHANGE ME
 PEmbroiderGraphics E;
 
 

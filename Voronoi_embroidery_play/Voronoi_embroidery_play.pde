@@ -76,7 +76,10 @@ void setup() {
   // focus y positions around bottom (w/ 50% standard deviation)
   ypos=new BiasedFloatRange(0, height, height, 0.5f);
   // setup clipper with centered octagon
-  clip=new ConvexPolygonClipper(new Circle(width*0.45).toPolygon2D(8).translate(new Vec2D(width/2,height/2)));
+ // clip=new ConvexPolygonClipper(new Circle(width*0.45).toPolygon2D(8).translate(new Vec2D(width/2,height/2)));
+  
+  clip=new SutherlandHodgemanClipper(new Rect(width*0.125, height*0.125, width*0.75, height*0.75));
+
   gfx = new ToxiclibsSupport(this);
   textFont(createFont("SansSerif", 10));
   
