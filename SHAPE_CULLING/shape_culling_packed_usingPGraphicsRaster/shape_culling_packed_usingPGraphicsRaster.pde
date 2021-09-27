@@ -53,7 +53,7 @@ void draw() {
       pg.fill(0);
       for (int i=0; i<p.circles.size(); i++) {
         Circle circ = p.circles.get(i);
-        drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, true, pg);
+        drawMossyCircle( E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-30)/3-20), i, true, pg);
       }
 
       pg.endDraw();
@@ -80,13 +80,14 @@ void draw() {
 
     /// end shape cull
 
-    E.beginOptimize();
+ //   E.beginOptimize();
 
     for (int i=0; i<p.circles.size(); i++) {
       Circle circ = p.circles.get(i);
-      drawMossyCircle(E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-80)/3-20), i, false, null);
+      // next line not working in this code
+      drawMossyCircle(E, int(circ.position.x), int(circ.position.y), int(circ.diameter/16*10), int((circ.diameter-30)/3-20), i, false, null);
     }
-    E.endOptimize();
+ //   E.endOptimize();
 
 
 
@@ -172,9 +173,9 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
 
   text(z, x, y);
 
-  if (diam2 <50) {
-    diam2 = 50;
-  }
+  //if (diam2 <50) {
+  //  diam2 = 50;
+  //}
 
   float ar = 2; // arc length of steps along interior circle
   float thStep = ar*2/(float(diam2)+30*offset/float(diam2));//
@@ -188,29 +189,25 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
 
   E.beginShape();
   if (!doCull) {
-    E.beginShape();
-    while (thSteps < PI*2) {
-      int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
-      PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
-      E.vertex(p.x, p.y);
-      thSteps += thStep;
-      i++;
+    //E.beginShape();
+    //while (thSteps < PI*2) {
 
 
 
 
-      //int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
-      //int offsetIn = int(noiseLoop(1, thSteps/(2*PI), .5+z)*offset);
-      //if (i%2 == 0) {
-      //  connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
-      //} else {
-      //  connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
-      //}
-      //thSteps += thStep;//random(0,thStep);
-      //i++;
-    }
 
-    E.endShape(true);
+    //  int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
+    //  int offsetIn = int(noiseLoop(1, thSteps/(2*PI), .5+z)*offset);
+    //  if (i%2 == 0) {
+    //    connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
+    //  } else {
+    //    connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
+    //  }
+    //  thSteps += thStep;//random(0,thStep);
+    //  i++;
+    //}
+
+    //E.endShape(true);
   } else {
     thSteps = 0;
     pg.pushMatrix();
