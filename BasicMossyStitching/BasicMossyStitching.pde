@@ -4,6 +4,8 @@ String fileType = ".pes";
 String fileName = "shape_culling_packed"; // CHANGE ME
 PEmbroiderGraphics E;
 
+int frames = 0;
+
 
 boolean running = true;
 boolean debugging = false;
@@ -13,13 +15,15 @@ boolean debugging = false;
 void setup() {
   size(1200, 1600); //100 px = 1 cm (so 14.2 cm is 1420px)
   PEmbroiderStart();
-  drawMossyCircle2( E, width/2, height/2, 130, 100, 1);
-  E.visualize();
 }
 
 
 void draw() {
-  ;
+  background(100);
+  E.clear();
+  drawMossyCircle2(E, width/2, height/2, 80, 50, 1);
+  E.visualize(true,true,true);
+  frames++;
 }
 
 
@@ -98,8 +102,7 @@ void connectPointsOnCircle(PEmbroiderGraphics E, float th1, float th2, int rad) 
 ///////////////////// MOSSY HELPERS ////////////////////////////////////
 
 
-void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, int z) {
-
+void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, float z) {
 
   ///// stitching parameters ////
   E.noFill();
@@ -108,23 +111,20 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   E.setStitch(20, 300, 0);
   ///// stitching parameters ////
 
-  float theta = 0; // convert to radians
+  float theta = random(10); // convert to radians
   float offset = pow(((abs(diam1-diam2)/2)/10), 2)*2;
-  println("circle number " + str(z)+":");
-  println(offset);
-  println(diam1);
-  println(diam2);
-  println();
+ // println("circle number " + str(z)+":");
+  //println(offset);
+  //println(diam1);
+  //println(diam2);
+  //println();
 
-  if (diam2 <50) {
-    diam2 = 50;
-  }
 
   float ar = 1; // arc length of steps along interior circle
   float thStep = ar*2/(float(diam2)+30*offset/float(diam2));//
 
   println("poop");//thStep*float(diam2)/2);
-  float thSteps = 0;
+  float thSteps = theta;
   int i = 0;
 
   E.pushMatrix();
@@ -135,7 +135,7 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   E.stroke(20);
 
   E.beginShape();
-  while (thSteps < PI*2) {
+  while (thSteps < PI*2+theta) {
     int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
     int offsetIn = int(noiseLoop(1, thSteps/(2*PI), .5+z)*offset);
     if (i%2 == 0) {
@@ -156,9 +156,8 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
 
 ////////////////////////////Mossy circle2 : no double stitch on inside
 
-void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, int z) {
-  int z_in = z;
-
+void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, float z) {
+  z += float(frames)*.07;
   ///// stitching parameters ////
   E.noFill();
   E.stroke(0, 0, 0); 
@@ -166,7 +165,7 @@ void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   E.setStitch(20, 300, 0);
   ///// stitching parameters ////
 
-  float theta = 0; // convert to radians
+  float theta = random(10); // convert to radians
   float offset = 60;//pow(((abs(diam1-diam2)/2)/10), 2)*8; /// double check the usage of this value (not responding as expected)
 
   float ar = 1.3; // arc length of steps along interior circle
@@ -185,10 +184,11 @@ void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
 
   
   for (int j = 0; j<15; j++) {
-    println(z);
-    thSteps = 0;
+    //println(z);
+    theta = 0;
+    thSteps = theta;
     E.beginShape();
-    while (thSteps < PI*2) {
+    while (thSteps < PI*2+theta) {
 
       if (i%2 == 0) {
         //Exterior
