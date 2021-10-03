@@ -34,8 +34,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
- 
- //Helpful ref thread: https://discourse.processing.org/t/creating-voronoi-patterns/14635/12
+
+//Helpful ref thread: https://discourse.processing.org/t/creating-voronoi-patterns/14635/12
 import toxi.geom.*;
 import toxi.geom.mesh2d.*;
 
@@ -63,102 +63,148 @@ boolean doShowHelp=true;
 boolean doClip;
 boolean doSave;
 boolean runningEmbroidery = false;
+boolean ranEmbroidery = false;
+
+int frame = 0;
 
 // Import the library, and declare a PEmbroider renderer. 
 import processing.embroider.*;
 PEmbroiderGraphics E;
 
 void setup() {
-  size(600, 600);
+  size(1200, 1000);
   smooth();
   // focus x positions around horizontal center (w/ 33% standard deviation)
   xpos=new BiasedFloatRange(0, width, width/2, 0.333f);
   // focus y positions around bottom (w/ 50% standard deviation)
   ypos=new BiasedFloatRange(0, height, height, 0.5f);
   // setup clipper with centered octagon
- // clip=new ConvexPolygonClipper(new Circle(width*0.45).toPolygon2D(8).translate(new Vec2D(width/2,height/2)));
-  
+  // clip=new ConvexPolygonClipper(new Circle(width*0.45).toPolygon2D(8).translate(new Vec2D(width/2,height/2)));
+
   clip=new SutherlandHodgemanClipper(new Rect(width*0.125, height*0.125, width*0.75, height*0.75));
 
   gfx = new ToxiclibsSupport(this);
   textFont(createFont("SansSerif", 10));
-  
-  
+
+
   E = new PEmbroiderGraphics(this, width, height);
-  E.setPath(sketchPath("Voronoi.pes"));
+  E.setPath(sketchPath("Voronoi3.pes"));
   E.beginDraw();
-  
 }
 
 void draw() {
-  if(!runningEmbroidery){
-  background(255);
-  stroke(0);
-  noFill();
-  // draw all voronoi polygons, clip them if needed...
-  for (Polygon2D poly : voronoi.getRegions()) {// get regions is all the polyg
-    
-    if (doClip) {
-      gfx.polygon2D(clip.clipPolygon(poly));
-    } 
-    else {
-      gfx.polygon2D(poly);
-    }
-  }
+  if (!runningEmbroidery) {
+    background(255);
+    stroke(0);
+    noFill();
+    // draw all voronoi polygons, clip them if needed...
+    for (Polygon2D poly : voronoi.getRegions()) {// get regions is all the polyg
 
-  // draw original points added to voronoi
-  if (doShowPoints) {
-    fill(255, 0, 255);
-    noStroke();
-    for (Vec2D c : voronoi.getSites()) {
-      ellipse(c.x, c.y, 5, 5);
+      if (doClip) {
+        gfx.polygon2D(clip.clipPolygon(poly));
+      } else {
+        gfx.polygon2D(poly);
+      }
     }
-  }
-  if (doSave) {
-    saveFrame("voronoi-" + DateUtils.timeStamp() + ".png");
-    doSave = false;
-  }
-  if (doShowHelp) {
-    fill(255, 0, 0);
-    text("p: toggle points", 20, 20);
-    text("t: toggle triangles", 20, 40);
-    text("x: clear all", 20, 60);
-    text("r: add random", 20, 80);
-    text("c: toggle clipping", 20, 100);
-    text("h: toggle help display", 20, 120);
-    text("space: save frame", 20, 140);
-    text("e: generate embroidery design", 20, 160);
-  }
+
+    // draw original points added to voronoi
+    if (doShowPoints) {
+      fill(255, 0, 255);
+      noStroke();
+      for (Vec2D c : voronoi.getSites()) {
+        ellipse(c.x, c.y, 5, 5);
+      }
+    }
+    if (doSave) {
+      saveFrame("voronoi-" + DateUtils.timeStamp() + ".png");
+      doSave = false;
+    }
+    if (doShowHelp) {
+      fill(255, 0, 0);
+      text("p: toggle points", 20, 20);
+      text("t: toggle triangles", 20, 40);
+      text("x: clear all", 20, 60);
+      text("r: add random", 20, 80);
+      text("c: toggle clipping", 20, 100);
+      text("h: toggle help display", 20, 120);
+      text("space: save frame", 20, 140);
+      text("e: generate embroidery design", 20, 160);
+    }
   } else {
     // Embroidery style
-    E.fill(0);
-    E.hatchSpacing(8);
-    E.hatchMode(PEmbroiderGraphics.CONCENTRIC);
-    E.setStitch(40, 50, 0); 
-    E.hatchAngle(PI);
-    //
-    
-    
-    int i = 0;
-    for (Polygon2D poly : voronoi.getRegions()) {
-      E.beginShape();
-      poly = clip.clipPolygon(poly);
-      println(poly);
-      for (Vec2D v : poly.vertices) {
-        E.hatchAngle(noise(i)*2*PI);
-        E.vertex(int(v.x),int(v.y));
+    if (!ranEmbroidery) {
+      background(180);
+      E.noFill();
+      E.hatchSpacing(10);
+      E.hatchMode(PEmbroiderGraphics.PARALLEL);
+      E.setStitch(5, 30, 1); 
+      //  E.hatchAngle(PI);
+      int i = 0;
+      for (Polygon2D poly : voronoi.getRegions()) {
+        E.beginOptimize();
+        E.beginShape();
+        poly = clip.clipPolygon(poly);
+        for (Vec2D v : poly.vertices) {
+          E.hatchAngle(noise(i, 1)*2*PI);
+          E.vertex(int(v.x), int(v.y));
+        }
+        E.endShape(CLOSE);
+        i++;
+        E.endOptimize();
       }
-      E.endShape(CLOSE);
-      i++;
-      println(i);
+
+      i =0;
+      E.hatchSpacing(6);
+      E.hatchMode(E.SATIN);
+      E.satinMode(E.BOUSTROPHEDON);
+
+      /*
+     satinMode(int mode)
+       This can be one of ZIGZAG, SIGSAG, or BOUSTROPHEDON
+       */
+      E.noStroke();
+      E.setStitch(10, 1000, 5); 
+      int lenReg = voronoi.getRegions().size();
+      for (Polygon2D poly : voronoi.getRegions()) {
+        int fillVal = int(float(i)/float(lenReg)*150);
+        E.hatchSpacing(6+random(-2,2));
+        E.beginOptimize();
+        E.fill(fillVal);
+        E.beginShape();
+        poly = clip.clipPolygon(poly);
+        println(poly);
+        for (Vec2D v : poly.vertices) {
+          E.hatchAngle(noise(i)*2*PI);
+          E.vertex(int(v.x), int(v.y));
+        }
+        E.endShape(CLOSE);
+        i++;
+        println(i);
+        E.endOptimize();
+      }
+      E.optimize();
+      E.visualize(true, true, true);
+      E.endDraw();
+    } else {
+      background(180);
+      E.visualize(true, true, true, frame);
+      frame++;
     }
-    E.optimize();
-    E.visualize(true,true,true);
-    E.endDraw();
-    noLoop();
+    ranEmbroidery = true;
   }
 }
 
+
+void setEmbroideryPresets(int i) {
+  switch(i) {
+  case 0:
+    break;
+  case 1:
+    break;
+  case 2:
+    break;
+  }
+}
 void keyPressed() {
   switch(key) {
   case ' ':

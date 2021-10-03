@@ -16,11 +16,14 @@ void setup() {
 
 void draw() {
   background(0);
+  println("running");
 
   if (frames>3) {
     opencv.loadImage(video);
     opencv.calculateOpticalFlow();
-
+    
+  //  PVector flow = opencv.getFlowAt(10,10);
+    
     image(video, 0, 0);
     translate(video.width, 0);
     stroke(255, 0, 0);
