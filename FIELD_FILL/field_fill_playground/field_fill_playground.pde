@@ -16,6 +16,9 @@ void setup() {
   size(400, 400); //100 px = 1 cm (so 14.2 cm is 1420px)
   // noLoop();
   PEmbroiderStart();
+  for(int i = 0; i < 1000000; i++){ 
+    println(i);
+  }
 }
 
 void draw() {
@@ -51,8 +54,8 @@ void draw() {
     }
   }
   E.popMatrix(); 
-  PEmbroiderWrite();
-  E.visualize(true, false, false);
+ // PEmbroiderWrite();
+  E.visualize(true, true, true);
   frame++;
   circleFrame -= circleFrame/300*10;
   println(frame);

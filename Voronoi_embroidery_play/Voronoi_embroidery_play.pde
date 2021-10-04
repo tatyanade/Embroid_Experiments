@@ -88,7 +88,7 @@ void setup() {
 
 
   E = new PEmbroiderGraphics(this, width, height);
-  E.setPath(sketchPath("Voronoi3.pes"));
+  E.setPath(sketchPath("Voronoi2.pes"));
   E.beginDraw();
 }
 

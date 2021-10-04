@@ -25,7 +25,7 @@ void draw() {
   drawMossyCircle2(E, width/2, height/2, 400, 100, 1);
   E.visualize(true, true, true);
   PEmbroiderWrite();
-  if (frames>80) {
+  if (frames>100) {
     exit();
   }
   frames++;
@@ -135,8 +135,6 @@ void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   E.strokeWeight(1);
   E.stroke(20);
 
-  for (int j = 0; j<1; j++) {
-  }
 
   for (int j = 0; j<1; j++) {
     //// Exterior //////
@@ -173,9 +171,6 @@ void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
     }
     E.endShape(CLOSE);
     //// END INTERIOR //////
-
-
-
 
 
 
