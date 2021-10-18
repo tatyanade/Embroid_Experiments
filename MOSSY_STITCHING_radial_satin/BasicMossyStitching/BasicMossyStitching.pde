@@ -175,6 +175,9 @@ void drawMossyCircle2(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
 
   float ar = 1; // arc length of steps along interior circle
   float thStep = ar*2/(float(diam2)+30*offset/float(diam2));//
+  
+  // ar = r*th;
+  // th = ar/r
 
   float thSteps = 0;
   int i = 0;
