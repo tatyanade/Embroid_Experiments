@@ -83,6 +83,11 @@ void draw() {
 
 
 
+
+
+
+
+
 ////////////////////// NEEDLE DOWN HELPERS ////////////////////////////////////////////////////////////
 
 PVector getNeedleDown(PEmbroiderGraphics E, int ndIndex) {
