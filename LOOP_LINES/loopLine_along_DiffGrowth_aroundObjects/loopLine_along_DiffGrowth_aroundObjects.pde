@@ -13,6 +13,7 @@ PEmbroiderGraphics E;
 PEmbroiderGraphics E2;
 int stitchPlaybackCount = 0;
 int lastStitchTime = 0;
+PVector center;
 
 /// FILE NAME /////
 String fileType = ".pes";
@@ -44,7 +45,8 @@ void setup() {
   size(800, 800);
 
   setNodes = new ArrayList<Node>();
-
+  
+  
 
   //// DEFINE EMBROIDERY DESIGN HERE ////////////////// <------------------------------------------------ CHANGE HERE ----------------------
 
@@ -66,7 +68,7 @@ void setup() {
 
   E2.setStitch(4, 6, 0);
   E2.noFill();
-  E2.CIRCLE_DETAIL = 3;
+  E2.CIRCLE_DETAIL = 6;
   int w= 500;
   int h= 500;
   //E2.rect(width/2-w/2, height/2-h/2, w, h);
