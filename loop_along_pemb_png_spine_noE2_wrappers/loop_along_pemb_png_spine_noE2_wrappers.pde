@@ -16,7 +16,7 @@ int lastStitchTime = 0;
 
 /// FILE NAME /////
 String fileType = ".pes";
-String fileName = "loop_circle-1"; // CHANGE ME
+String fileName = "lace_transparent_rats_opt"; // CHANGE ME
 
 // LOOP VARIABLES ///
 boolean loop = false;
@@ -24,8 +24,12 @@ int frame = 0;
 int overlaps = 0;
 
 //Spine trace img
-PImage img;
-
+PImage img1;
+PImage img2;
+PImage img3;
+PImage img4;
+PImage img5;
+PImage img6;
 
 void setup() {
   size(1300, 1200);
@@ -33,8 +37,12 @@ void setup() {
   if (!loop) {
     noLoop();
   }
-  img = loadImage("lace_spine_big_2.png");
-  
+  img1 = loadImage("algo-1-big.png");
+  img2 = loadImage("algo-2-big.png");
+  img3 = loadImage("algo-3-big.png");
+  img4 = loadImage("algo-4-big.png");
+  img5 = loadImage("algo-5-big.png");
+  img6 = loadImage("algo-eyes.png");
   
   //// DEFINE EMBROIDERY DESIGN HERE ////////////////// <------------------------------------------------ CHANGE HERE ----------------------
   E = new PEmbroiderGraphics(this, width, height);
@@ -43,12 +51,22 @@ void setup() {
   String outputFilePath = sketchPath(fileName+fileType);
   E.setPath(outputFilePath);
 
-  traceLines(E, img, 7, 12, .8);
+  traceLines(E, img5, 5, 3, 3);
+  traceLines(E, img4, 4, 4, 2);
+  traceLines(E, img3, 7, 6, 1.2);
+  traceLines(E, img2, 7, 6, .9);
+  traceLines(E, img1, 7, 12, .8);
+  noStroke();
+  fill(0);
+    E.hatchMode(PEmbroiderGraphics.CROSS); 
+E.hatchSpacing(4);
+  //E.image(img6, 0,0);
 
-
-  E.visualize();
+  //E.optimize();
+  checkStitchDens(E);
+  //E.visualize();
   //E.endDraw();
-  save(fileName+".png"); //saves a png of design from canvas
+  //save(fileName+".png"); //saves a png of design from canvas
 }
 
 
@@ -97,10 +115,10 @@ int ndLength(PEmbroiderGraphics E) {
 ////////////////////// LOOP HELPERS ////////////////////////////////////////////////////////
 float loopLineAngle = PI/2;
 
-void loopLineImage(PImage img, float stitchLength, float circleRad, float overlap){
+//void loopLineImage(PImage img, float stitchLength, float circleRad, float overlap){
   
-  return 0;
-}
+
+//}
 
 
 void drawLoopLine(float startX, float startY, float endX, float endY, float stitchLength, float circleRad, float overlap){  
@@ -120,12 +138,9 @@ void drawLoopLine(float startX, float startY, float endX, float endY, float stit
   
   float curCX = cx;
   float curCY = cy;
-  print("check1");
   for (int i = 0; i < numSteps; i++){
-    print("check2");
     float curX = curCX+(r * cos(loopLineAngle));
     float curY = curCY+(r * sin(loopLineAngle));
-    print("check3");
     E.vertex(curX, curY);
     circle(curX, curY, 1);
     
@@ -158,26 +173,18 @@ void traceLines(PEmbroiderGraphics E, PImage img, float stitchLength, float circ
 
   // Fetch every vertex from the arrays produced by the tracer;
   // Add them to some PEmbroider shapes. 
-  //println(c);
-  //println(c.get(0));
-  //println(c.get(0).get(0));
+
   int redValue = 0;
   noStroke();
-  println("c.size()");
-  println(c.size());
     
   for (int i = 0; i < c.size(); i++) {
     E.beginShape();
     redValue+=1;
-    println("c.get(i).size()");
-    println(c.get(i).size());
-    println(c.get(i));
+
     
     
     for (int j = 0; j < c.get(i).size() -1; j++) {
-      
-       print(" ~~ ");
-       println(c.get(i).get(j)); 
+
        int k = j+1;
        
        int x1 = c.get(i).get(j)[0];
@@ -185,19 +192,10 @@ void traceLines(PEmbroiderGraphics E, PImage img, float stitchLength, float circ
        int x2 = c.get(i).get(k)[0];
        int y2 = c.get(i).get(k)[1];
        drawLoopLine(x1, y1, x2, y2, stitchLength,  circleRad,  overlap );
-       //println(c.get(i).get(k)); 
-     
-      //println("c.get(i).get(j).size()");
-      //println(c.get(i).get(j).length);
+
       fill(redValue,255,0);
       circle(c.get(i).get(j)[0], c.get(i).get(j)[1], 2);
-      //println(redValue);
-      //println(str(c.get(i).get(j)));
-      
-      //println("");
-      
-      //drawLoopLine(c.get(i).get(j)[0], c.get(i).get(j)[1], c.get(i).get(j+1)[0], c.get(i).get(j+1)[1],5,20,1);
-      //E.vertex(c.get(i).get(j)[0], c.get(i).get(j)[1]);
+
     }
     E.endShape();
   }
