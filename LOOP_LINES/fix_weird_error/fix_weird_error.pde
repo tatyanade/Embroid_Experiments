@@ -26,47 +26,94 @@ void setup() {
   
   ////// DEFINE EMBROIDERY DESIGN HERE ////////////////// <------------------------------------------------ CHANGE HERE ----------------------
   E = new PEmbroiderGraphics(this, width, height);
-  //E.beginDraw();
   String outputFilePath = sketchPath(fileName+fileType);
+    E.setPath(outputFilePath); 
+
   E.setStitch(20, 40, 0);
   E.hatchSpacing(18);
   E.hatchMode(PEmbroiderGraphics.SPIRAL);  
+  E.beginDraw();
 
-  //E.fill(0, 0, 0);
+  E.fill(0, 0, 0);
 
-  ////changing stitchlength
-  //int numRows = 15;
-  //for (int i = 0; i < numRows; i ++){
-  //  int x = 50;
-  //  int y = 40 + 50*i;
-  //  drawLoopLine(x, y, x + 200, y , 3+i*2, 10, .8);
-  //}
+  //changing stitchlength
+  int numRows = 15;
+  for (int i = 0; i < numRows; i ++){
+    int x = 50;
+    int y = 40 + 50*i;
+    drawLoopLine(x, y, x + 200, y , 15+i*2, 10, .8);
+  }
   
-  ////changing overlap value 
-  //for (int i = 0; i < numRows; i ++){
-  //  int x = 300;
-  //  int y = 40 + 50*i;
-  //  drawLoopLine(x, y, x + 200, y , 8, 10, .5 + i*.1);
-  //}
+  //changing overlap value 
+  for (int i = 0; i < numRows; i ++){
+    int x = 300;
+    int y = 40 + 50*i;
+    drawLoopLine(x, y, x + 200, y , 8, 10, .5 + i*.1);
+  }
   
-  //  //changing overlap value 
-  //for (int i = 0; i < numRows; i ++){
-  //  int x = 550;
-  //  int y = 40 + 50*i;
-  //  drawLoopLine(x, y, x + 200, y , 8, 5 + i, .8);
-  //}
+    //changing overlap value 
+  for (int i = 0; i < numRows; i ++){
+    int x = 550;
+    int y = 40 + 50*i;
+    drawLoopLine2(x, y, x + 200, y , 8, 5 + i, .8);
+  }
   
-  E.circle(100,100,30);
 
   //E.optimize();
   E.visualize(true, true, true);
-  E.endDraw();
-  save(fileName+".png"); //saves a png of design from canvas
+  //E.endDraw();
+  //save(fileName+".png"); //saves a png of design from canvas
+}
+
+
+void draw() {
+  if (loop) {
+    background(100);
+    E.visualize(true, true, true, frame);
+    frame ++;
+    delay(40);
+  }
 }
 
 
 ////////////////////// LOOP HELPERS ////////////////////////////////////////////////////////
 float loopLineAngle = PI/2;
+
+
+void drawLoopLine2(float startX, float startY, float endX, float endY, float stitchLength, float circleRad, float overlap){  
+  float r = circleRad;
+  float cx = startX;
+  float cy = startY;
+  
+  float lineLength = dist(startX, startY, endX, endY);
+  float numCycles = (lineLength/r)*(1/overlap);
+
+  float angleDifference = stitchLength/r;
+  float pointsPerCircle = TWO_PI/angleDifference;
+  float numSteps = pointsPerCircle*numCycles ;
+  
+  float dx = (endX-startX)/ numSteps;
+  float dy = (endY-startY)/ numSteps;
+  
+  float curCX = cx;
+  float curCY = cy;
+  for (int i = 0; i < numSteps; i++){
+    float curX = curCX+(r * cos(loopLineAngle));
+    float curY = curCY+(r * sin(loopLineAngle));
+      E.beginShape();
+
+    E.vertex(curX, curY);
+    //circle(curX, curY,2);
+    
+        E.endShape();
+
+    loopLineAngle += angleDifference;
+    curCX += dx;
+    curCY += dy;
+  }
+
+}
+
 
 void drawLoopLine(float startX, float startY, float endX, float endY, float stitchLength, float circleRad, float overlap){  
   E.beginShape();

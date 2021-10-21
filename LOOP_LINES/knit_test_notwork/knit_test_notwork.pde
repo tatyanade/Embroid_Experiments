@@ -45,33 +45,33 @@ void setup() {
     int x = 50;
     ystart +=30;    
     //1.8 - 1.803 throws error
-    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 0.77);
+    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 15);
   }
-  ystart += 40;
-  for (int i = 0; i < numRows; i ++){
-    int x = 50;
-    ystart +=20;
-    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.5);
-  }
+  //ystart += 40;
+  //for (int i = 0; i < numRows; i ++){
+  //  int x = 50;
+  //  ystart +=20;
+  //  drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.5);
+  //}
   
-  ystart += 40;
-  //numRows = 10;
-  for (int i = 0; i < numRows; i ++){
-    int x = 50;
-    ystart +=20;    
-    //1.8 - 1.803 throws error
-    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.805);
-  }
-  ystart +=40;
+  //ystart += 40;
+  ////numRows = 10;
+  //for (int i = 0; i < numRows; i ++){
+  //  int x = 50;
+  //  ystart +=20;    
+  //  //1.8 - 1.803 throws error
+  //  drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.805);
+  //}
+  //ystart +=40;
   
-  numRows = 6;
-  for (int i = 0; i < numRows; i ++){
-    int x = 50;
-    ystart +=30;    
-    //1.8 - 1.803 throws error
-    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.805);
-  }
-  ystart +=60;
+  //numRows = 6;
+  //for (int i = 0; i < numRows; i ++){
+  //  int x = 50;
+  //  ystart +=30;    
+  //  //1.8 - 1.803 throws error
+  //  drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.805);
+  //}
+  //ystart +=60;
   
 
   

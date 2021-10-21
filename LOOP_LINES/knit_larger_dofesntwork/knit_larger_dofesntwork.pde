@@ -13,15 +13,15 @@ String fileType = ".pes";
 String fileName = "knit_test"; // CHANGE ME
 
 // LOOP VARIABLES ///
-boolean loop = false;
+boolean loop = true;//false;
 int frame = 0;
 int overlaps = 0;
 
 
 void setup() {
-  size(600, 900);
+  size(1200, 900);
   if (!loop) {
-    //noLoop();
+    noLoop();
   }
   
   //// DEFINE EMBROIDERY DESIGN HERE ////////////////// <------------------------------------------------ CHANGE HERE ----------------------
@@ -38,23 +38,16 @@ void setup() {
   int ystart = 40;
 
   //changing stitchlength
-  int numRows = 8;
+  int numRows = 20;
   
-  
-  for (int i = 0; i < 6; i ++){
-    int x = 50;
-    ystart +=30;    
-    //1.8 - 1.803 throws error
-    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 0.77);
-  }
-  ystart += 40;
+  ystart +=0;
   for (int i = 0; i < numRows; i ++){
     int x = 50;
     ystart +=20;
     drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.5);
   }
   
-  ystart += 40;
+  //ystart += 20;
   //numRows = 10;
   for (int i = 0; i < numRows; i ++){
     int x = 50;
@@ -64,27 +57,32 @@ void setup() {
   }
   ystart +=40;
   
-  numRows = 6;
+ystart = 40;
+ 
+  //ystart += 20;
+  //numRows = 10;
   for (int i = 0; i < numRows; i ++){
-    int x = 50;
-    ystart +=30;    
+    int x = 550;
+    ystart +=20;    
     //1.8 - 1.803 throws error
     drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.805);
   }
-  ystart +=60;
-  
+    for (int i = 0; i < numRows; i ++){
+    int x = 550;
+    ystart +=20;
+    drawLoopLine(x, ystart, x + 500, ystart ,7, 20, 1.5);
+  }
+ 
+//    for (int i = 0; i < numRows; i ++){
+//    int x = 50;
+//    ystart +=15;
+//    //1.8 - 1.803 throws error
+//    drawLoopLine(x, ystart, x + 500, ystart ,7, 10, 1.805);
+//  }
 
-  
-  //  for (int i = 0; i < numRows; i ++){
-  //  int x = 50;
-  //  ystart +=15;
-  //  //1.8 - 1.803 throws error
-  //  drawLoopLine(x, ystart, x + 500, ystart ,7, 10, 1.805);
-  //}
-
- // E.optimize();
+  //E.optimize();
   E.visualize(true, true, true);
-  //E.endDraw();
+  E.endDraw();
   save(fileName+".png"); //saves a png of design from canvas
   
 }
@@ -96,11 +94,10 @@ void draw(){
 
 
 ////////////////////// LOOP HELPERS ////////////////////////////////////////////////////////
-float loopLineAngle = PI/2;
+float loopLineAngle;// = PI/2;
 
 void drawLoopLine(float startX, float startY, float endX, float endY, float stitchLength, float circleRad, float overlap){  
-  loopLineAngle = PI/2;
-  E.beginShape();
+  loopLineAngle =3 * PI/2;// 3*PI/4;
   float r = circleRad;
   float cx = startX;
   float cy = startY;
@@ -117,7 +114,10 @@ void drawLoopLine(float startX, float startY, float endX, float endY, float stit
   
   float curCX = cx;
   float curCY = cy;
+    E.beginShape();
+
   for (int i = 0; i < numSteps; i++){
+
     float curX = curCX+(r * cos(loopLineAngle));
     float curY = curCY+(r * sin(loopLineAngle));
     
@@ -126,7 +126,8 @@ void drawLoopLine(float startX, float startY, float endX, float endY, float stit
     loopLineAngle += angleDifference;
     curCX += dx;
     curCY += dy;
+
   }
-  E.endShape();
+      E.endShape();
 
 }
