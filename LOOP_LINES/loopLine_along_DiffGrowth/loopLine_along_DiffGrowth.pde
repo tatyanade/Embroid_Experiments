@@ -26,9 +26,9 @@ int overlaps = 0;
 // DIFF LINE VARIABLES //
 float _maxForce = 1; // Maximum steering force
 float _maxSpeed = 2; // Maximum speed
-float _desiredSeparation = 30;
+float _desiredSeparation = 20;
 float _separationCohesionRation = 1.001;
-float _maxEdgeLen = 10;
+float _maxEdgeLen = 8;
 DifferentialLine _diff_line;
 
 boolean doEndMotion = false;
@@ -94,6 +94,7 @@ void setup() {
   }
 
   E.visualize(true, true, true);
+  
   save(fileName+".png"); //saves a png of design from canvas
 }
 
@@ -105,6 +106,7 @@ void draw() {
     E.clear();
     _diff_line.renderLoop(E);
     E.visualize(true, true, true);
+    E2.visualize();
   }
 }
 
