@@ -3,24 +3,31 @@ import processing.embroider.*;
 String fileType = ".pes";
 String fileName = "field_fill26"; // CHANGE ME
 PEmbroiderGraphics E;
-float frame = 0;
+int frame = 0;
 PImage myImage;
 
 PVector center;
 float GradMult = 1;
-int MODE = 1;
+int MODE = 2;
 float hatchSpacing = 7;
 
-
-
+boolean doWrite = true;
 
 
 float randAddition = 0;
+boolean edditting = true;
+
+int setStitchVal = 50; 
+
+float zVal = 0;
+
+
+
 
 
 void setup() {
-  size(500, 500); //100 px = 1 cm (so 14.2 cm is 1420px)
-  myImage = loadImage("TEST8.png"); 
+  size(700, 700); //100 px = 1 cm (so 14.2 cm is 1420px)
+  myImage = loadImage("TEST13.png"); 
   PEmbroiderStart();
   E.toggleResample(true);
   E.clear();
@@ -37,9 +44,9 @@ void setup() {
   // E.hatchMode(E.CROSS);
   E.hatchSpacing(hatchSpacing);
   E.RESAMPLE_MAXTURN = 5;
-  E.setStitch(30, 50, 5);
+  E.setStitch(setStitchVal-20, setStitchVal, 10);
   E.image(myImage, -myImage.width/2, -myImage.height/2);
-
+  //E.circle(0,0,400,400)
 
   filterByColor4(E);
 
@@ -49,13 +56,23 @@ void setup() {
 
 
   E.popMatrix();
-  PEmbroiderWrite(E);
   E.visualize(true, true, true);
 }
 
 void draw() {
-  background(180);
-  E.visualize(true, true, false);
+  if (edditting) {
+    background(180);
+    E.visualize(true, true, false);
+  } else {
+    if (doWrite) {
+      E.optimize(10, 1000);
+      PEmbroiderWrite(E,"interactiveFill");
+      doWrite = false;
+    }
+    background(180);
+    E.visualize(true, true, true, frame);
+    frame++;
+  }
 }
 
 void doubleStitch(PEmbroiderGraphics E, float x, float y, float x2, float y2) {
@@ -70,69 +87,92 @@ void PEmbroiderStart() {
   E.setStitch(8, 14, 0);
 }
 
-void PEmbroiderWrite(PEmbroiderGraphics E) {
-  String outputFilePath = sketchPath(fileName+fileType);
+void PEmbroiderWrite(PEmbroiderGraphics E, String fileName) {
+  String outputFilePath = sketchPath(fileName+timeStamp()+fileType);
   E.setPath(outputFilePath);
   E.endDraw(); // write out the file
-  save(fileName+".png"); //saves a png of design from canvas
+  save(fileName+timeStamp()+".png"); //saves a png of design from canvas
 }
 
 void mousePressed() {
-  println("Pressed");
-  center = new PVector(mouseX, mouseY);
-  filterByColor4(E);
+  if (edditting) {
+    zVal++;
+    println("Pressed");
+    center = new PVector(mouseX, mouseY);
+    resetDesignFill_Color(E);
+    filterByColor4(E);
+  }
 }
 
 void mouseDragged() {
-  println("Dragged");
-  center = new PVector(mouseX, mouseY);
-  filterByColor4(E);
+  if (edditting) {
+    println("Dragged");
+    center = new PVector(mouseX, mouseY);
+    filterByColor4(E);
+  }
 }
 
 void keyPressed() {
-  // Handle arrow keys
-  if (key == CODED) {
-    if (keyCode == UP) {
-      GradMult +=.1;
-    } else if (keyCode == DOWN) {
-      GradMult -=.1;
-    } else if (keyCode == RIGHT) {
-      randAddition +=1;
-    } else if (keyCode == LEFT) {
-      randAddition -=1;
-    }
-  } else {
-    if (key == '0') {
-      MODE = 0;
-      setFieldFill(E, frame*.01, 10);
-    } else if (key == '1') {
-      MODE = 1;
+  if (edditting) {
+    // Handle arrow keys
+    if (key == CODED) {
+      if (keyCode == UP) {
+        GradMult +=.1;
+      } else if (keyCode == DOWN) {
+        GradMult -=.1;
+      } else if (keyCode == RIGHT) {
+        randAddition +=1;
+      } else if (keyCode == LEFT) {
+        randAddition -=1;
+      }
+    } else {
+      if (key == '0') {
+        MODE = 0;
         setFieldFill(E, frame*.01, 10);
-    } else if (key == '2') {
-      MODE = 2;
+      } else if (key == '1') {
+        MODE = 1;
         setFieldFill(E, frame*.01, 10);
-    } else if ( key == '3') {
-      E.hatchMode(E.CROSS);
-    }else if ( key == '4') {
-      E.hatchMode(E.CONCENTRIC);
-    } else if (key == 'w') {
-      hatchSpacing *= 1.1 ;
-    } else if (key == 's') {
-      hatchSpacing *= 1/1.1;
-    } else if (key == ' ') {
-      PEmbroiderWrite(E);
+      } else if (key == '2') {
+        MODE = 2;
+        setFieldFill(E, frame*.01, 10);
+      } else if ( key == '3') {
+        MODE = 3;
+        setFieldFill(E, frame*.01, 10);
+      } else if ( key == '4') {
+        MODE = 4;
+        setFieldFill(E, frame*.01, 10);
+      } else if (key == '5') {
+        E.hatchMode(E.CROSS);
+      } else if (key == 'w') {
+        hatchSpacing *= 1.1 ;
+      } else if (key == 's') {
+        hatchSpacing *= 1/1.1;
+      } else if (key == ' ') {
+        edditting = false;
+      } else if (key == '+') {
+        setStitchVal++;
+        E.setStitch(setStitchVal-20, setStitchVal, 10);
+        println(setStitchVal);
+      } else if (key == '-') {
+        setStitchVal--;
+        E.setStitch(setStitchVal-20, setStitchVal, 10);
+        println(setStitchVal);
+      }
+      if (edditting) {
+        resetDesignFill_Color(E);
+      }
     }
-
-    E.clear();
-    E.hatchSpacing(hatchSpacing);
-    E.pushMatrix();
-    E.translate(width/2, height/2);
-    E.image(myImage, -myImage.width/2, -myImage.height/2);
-    E.popMatrix();
+    filterByColor4(E);
   }
+}
 
-
-  filterByColor4(E);
+void resetDesignFill_Color(PEmbroiderGraphics E) {
+  E.clear();
+  E.hatchSpacing(hatchSpacing);
+  E.pushMatrix();
+  E.translate(width/2, height/2);
+  E.image(myImage, -myImage.width/2, -myImage.height/2);
+  E.popMatrix();
 }
 
 
@@ -141,7 +181,6 @@ void keyPressed() {
 ///////////////Field Fill Helpers /////////////////////////
 
 void setFieldFill(PEmbroiderGraphics E, float z, float len) {
-
   MyVecField mvf = new MyVecField(z, len, 1);
   E.hatchMode(PEmbroiderGraphics.VECFIELD);
   E.HATCH_VECFIELD = mvf;
@@ -151,15 +190,15 @@ void setFieldFill(PEmbroiderGraphics E, float z, float len) {
 
 class MyVecField implements PEmbroiderGraphics.VectorField {
   // Helpful Vector Field Visualizer: https://www.desmos.com/calculator/eijhparfmd
-  PVector center = new PVector(width/2, height/2);
+  PVector center1 = new PVector(width/2, height/2);
   float z;
   float len;
   int mode;
   float minX = 10000;
   float minY = 10000;
-  float thetaMultiplier;
-  float radialMultiplier;
-  float noiseMultiplier;
+  float thetaMultiplier = .04;
+  float radialMultiplier= .01;
+  float noiseMultiplier= 3;
 
   MyVecField(float z, float len, int mode) {
     this.mode = mode;
@@ -174,7 +213,13 @@ class MyVecField implements PEmbroiderGraphics.VectorField {
   }
 
   public PVector get(float x, float y) {
-    PVector centerPoint = null; // vector that points to the center
+    if (MODE != 0) {
+      x=x+width/2-myImage.width/2;
+      y=y+height/2-myImage.height/2;
+    }
+    PVector centerPoint = center.copy().sub(x, y); // vector that points to the center
+    float heading = centerPoint.heading();
+    float mag = centerPoint.mag();
     switch(MODE) {
     case 0:
       x*=0.01;
@@ -183,39 +228,40 @@ class MyVecField implements PEmbroiderGraphics.VectorField {
     case 1:
       x=x+width/2-myImage.width/2;
       y=y+height/2-myImage.height/2;
-      centerPoint = this.center.copy().sub(x, y);
       if (minX>x) {
         minX = x;
       }
       if (minY>y) {
         minY=y;
       }
-      //.normalize().mult(10);//.rotate(PI/2);
       if (centerPoint.mag() < 5) {
         return new PVector(0, 0);
       }
       centerPoint.normalize().mult(len).rotate(PI/2);//.rotate(PI/2);
       return centerPoint;
     case 2:
-      x=x+width/2-myImage.width/2;
-      y=y+height/2-myImage.height/2;
-      centerPoint = this.center.copy().sub(x, y);
-      if (minX>x) {
-        minX = x;
-      }
-      if (minY>y) {
-        minY=y;
-      }
       if (centerPoint.mag() < 5) {
         return new PVector(0, 0);
       }
-      //point(x,y);
-      float heading = centerPoint.heading();
-      float mag = centerPoint.mag();
-
-      float noiseVal = (noise(sin(heading)*thetaMultiplier, mag*radialMultiplier)-.5)*noiseMultiplier;
+      float noiseVal = (noise(sin(heading)*thetaMultiplier, mag*radialMultiplier, zVal)-.5)*noiseMultiplier;
       centerPoint.normalize().mult(10).rotate(noiseVal);
+      return centerPoint;  
+    case 3:
+      if (centerPoint.mag() < 5) {
+        return new PVector(0, 0);
+      }
+      centerPoint.normalize().mult(10);
       return centerPoint;
+    case 4:
+      PVector vect = new PVector(x, y);
+      PVector start = new PVector(width/2, height/2);
+      PVector a = center.copy().sub(start);
+      if (y - start.y > a.y/a.x*(x-start.x)) {
+        println(x, y);
+        return new PVector(10, 0);
+      } else {
+        return new PVector(0, 10);
+      }
     }
     return null;
   }
@@ -534,6 +580,10 @@ void resetPolylineColor(PEmbroiderGraphics E, int i, color c) {
   E.colors.set(i, colorVal);
 }
 
+
+String timeStamp() {
+  return "D" + str(day())+"_"+str(hour())+"-"+str(minute())+"-"+str(second());
+}
 
 ////////////////////// END NEEDLE DOWN HELPERS /////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

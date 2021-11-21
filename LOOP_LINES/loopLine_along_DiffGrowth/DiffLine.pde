@@ -80,10 +80,6 @@ class DifferentialLine {
     E.endShape(CLOSE);
   }
   
-  void exportFrame() {
-    saveFrame(day()+""+hour()+""+minute()+""+second()+".png");
-  }
-  
   
   void drawLoopLine(PEmbroiderGraphics E ,float startX, float startY, float endX, float endY, float stitchLength, float circleRad, float overlap){  
   float r = circleRad;
@@ -107,7 +103,6 @@ class DifferentialLine {
     float curY = curCY+(r * sin(loopLineAngle));
     
     E.vertex(curX, curY);
-    //circle(curX, curY, 1);
     
     loopLineAngle += angleDifference;
     curCX += dx;
