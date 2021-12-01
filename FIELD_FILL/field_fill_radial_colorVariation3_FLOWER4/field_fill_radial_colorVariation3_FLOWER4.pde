@@ -14,7 +14,7 @@ PImage image_INT;
 PVector center;
 float GradMult = 1;
 int MODE = 2;
-float hatchSpacing = 40;
+float hatchSpacing = 30;
 
 boolean doWrite = true;
 
@@ -99,16 +99,17 @@ void draw() {
     if (doWrite) {
       E_EXT.optimize(30, 1000);
       //backstitchPolylines(E_EXT);
-      renderZigOnLines(E4, E_EXT);
+      renderZigFUNOnLines(E4, E_EXT);
       PEmbroiderWrite(E_EXT, fileName);
       PEmbroiderWrite(E4, "ZiggyBits");
       doWrite = false;
+      testFuntion();
     }
     background(180);
-   // E_EXT.visualize(true, true, true, frame);
+    // E_EXT.visualize(true, true, true, frame);
     //E_INT.visualize(true, true, true, frame);
-    E3.visualize(true, true, true, frame);
-    E4.visualize(true, true, true,frame);
+    // E3.visualize(true, true, true, frame);
+    E4.visualize(true, true, true, frame*5);
     PVector circleCent = getND(E_INT, frame);
     pushStyle();
     fill(255, 0, 0);
@@ -130,9 +131,11 @@ void PEmbroiderWrite(PEmbroiderGraphics E, String fileName) {
   E.endDraw(); // write out the file
 }
 
+float zVal = 0;
 void mousePressed() {
   if (edditting) {
     center = new PVector(mouseX, mouseY);
+    zVal += .1;
     resetDesignFill_Color(E_EXT);
   }
 }
@@ -227,9 +230,9 @@ class MyVecField implements PEmbroiderGraphics.VectorField {
   int mode;
   float minX = 10000;
   float minY = 10000;
-  float thetaMultiplier = .02;
-  float radialMultiplier = .01;
-  float noiseMultiplier = 2;
+  float thetaMultiplier = .03;
+  float radialMultiplier = .005;
+  float noiseMultiplier = 0;//5;
   boolean set = false;
 
   MyVecField(float z, float len, int mode) {
@@ -265,7 +268,6 @@ class MyVecField implements PEmbroiderGraphics.VectorField {
       if (minY>y) {
         minY=y;
       }
-      //.normalize().mult(10);//.rotate(PI/2);
       if (centerPoint.mag() < 5) {
         return new PVector(0, 0);
       }
@@ -288,7 +290,7 @@ class MyVecField implements PEmbroiderGraphics.VectorField {
       float heading = centerPoint.heading();
       float mag = centerPoint.mag();
 
-      float noiseVal = (noise(sin(heading)*thetaMultiplier, mag*radialMultiplier)-.5)*noiseMultiplier;
+      float noiseVal = (noise(sin(heading)*thetaMultiplier, mag*radialMultiplier, zVal)-.5)*noiseMultiplier;
       centerPoint.normalize().mult(10).rotate(noiseVal);
       return centerPoint;
     }
@@ -732,7 +734,6 @@ void renderZigPolyCircProf(PEmbroiderGraphics E, PEmbroiderGraphics E_ref, int i
   E.beginShape();
   for (int k=0; k<E_ref.polylines.get(i).size()-1; k++) {
     float t = 0;
-    println("////kSteps values////");
     //increments * stLen = dist
     //increments = dis/stLen
     PVector p1 = E_ref.polylines.get(i).get(k);
@@ -743,11 +744,8 @@ void renderZigPolyCircProf(PEmbroiderGraphics E, PEmbroiderGraphics E_ref, int i
     tan.mult(stWidth/2);
     PVector step = p2.copy().sub(p1).div(increments);
     float kSteps = 1/float(increments);
-    println(kSteps);
     for (int j = 0; j <increments; j++) {
-        t = (float(k)+kSteps*float(j))/float(E_ref.polylines.get(i).size()-1)*PI;
-
-      println(t);
+      t = (float(k)+kSteps*float(j))/float(E_ref.polylines.get(i).size()-1)*PI;
       E.vertex(p1.x+step.x*j+tan.x*dir*sin(t), p1.y+step.y*j+tan.y*dir*sin(t));
       dir*= -1;
     }
@@ -769,7 +767,6 @@ void renderZigPolyCircProf_REV(PEmbroiderGraphics E, PEmbroiderGraphics E_ref, i
     tan.mult(stWidth/2);
     PVector step = p2.copy().sub(p1).div(increments);
     float kSteps = 1/float(increments);
-    println(kSteps);
     for (int j = 0; j <increments; j++) {
       t = (float(k2)+kSteps*float(j))/float(E_ref.polylines.get(i).size()-1)*PI;
       E.vertex(p1.x+step.x*j+tan.x*dir*sin(t), p1.y+step.y*j+tan.y*dir*sin(t));
@@ -791,15 +788,6 @@ void renderZigPolyCircProfLowRes(PEmbroiderGraphics E, PEmbroiderGraphics E_ref,
     } else {
       t = PI/2;
     }
-    println("///////poly size://///");
-    println(float(E_ref.polylines.get(i).size()));
-    println("///////t://///");
-    println(t);
-    println("////steps////");
-    println(steps);
-    println("////val in steps////");
-    println(float(E_ref.polylines.get(i).size()-2));
-    println("////kSteps values////");
     PVector p1 = E_ref.polylines.get(i).get(k);
     PVector p2 = E_ref.polylines.get(i).get(k+1);
     PVector tan = p2.copy().sub(p1).normalize();
@@ -809,18 +797,132 @@ void renderZigPolyCircProfLowRes(PEmbroiderGraphics E, PEmbroiderGraphics E_ref,
     PVector step = p2.copy().sub(p1).div(increments);
     for (int j = 0; j <increments; j++) {
       E.vertex(p1.x+step.x*j+tan.x*dir*sin(t), p1.y+step.y*j+tan.y*dir*sin(t));
-      
+
       dir*= -1;
     }
   }
   E.endShape();
 }
 
+float polyTraced = 0;
+float sizeFilter = .35;
+
+void renderZigPolyFUNProf(PEmbroiderGraphics E, PEmbroiderGraphics E_ref, int i, float stWidth, int dir, boolean doSampleSize) {
+  float stLen = 1.6;
+  E.beginShape();
+  for (int k=0; k<E_ref.polylines.get(i).size()-1; k++) {
+    float t = 0;
+    //increments * stLen = dist
+    //increments = dis/stLen
+    PVector p1 = E_ref.polylines.get(i).get(k);
+    PVector p2 = E_ref.polylines.get(i).get(k+1);
+    PVector tan = p2.copy().sub(p1).normalize();
+    int increments = int(p1.copy().sub(p2).mag()/stLen);
+    tan.rotate(PI/2);
+    tan.mult(stWidth/2);
+    PVector step = p2.copy().sub(p1).div(increments);
+    float kSteps = 1/float(increments);
+    for (int j = 0; j <increments; j++) {
+      t = (float(k)+kSteps*float(j))/float(E_ref.polylines.get(i).size()-1);
+      if (doSampleSize){
+        if (f1(t)>sizeFilter) {
+          E.vertex(p1.x+step.x*j+tan.x*dir*f1(t), p1.y+step.y*j+tan.y*dir*f1(t));
+        }
+    } else {
+      E.vertex(p1.x+step.x*j+tan.x*dir*f1(t), p1.y+step.y*j+tan.y*dir*f1(t));
+    }
+    dir*= -1;
+  }
+}
+E.endShape();
+}
+
+void renderZigPolyFUNProf_REV(PEmbroiderGraphics E, PEmbroiderGraphics E_ref, int i, float stWidth, int dir, boolean doSampleSize) {
+  float stLen = 3;
+  E.beginShape();
+  for (int k=E_ref.polylines.get(i).size()-2; k>=0; k--) {
+    int k2 = (E_ref.polylines.get(i).size()-2)-k;
+    float t = 0;
+    PVector p1 = E_ref.polylines.get(i).get(k+1);
+    PVector p2 = E_ref.polylines.get(i).get(k);
+    PVector tan = p2.copy().sub(p1).normalize();
+    int increments = int(p1.copy().sub(p2).mag()/stLen);
+    tan.rotate(PI/2);
+    tan.mult(stWidth/2);
+    PVector step = p2.copy().sub(p1).div(increments);
+    float kSteps = 1/float(increments);
+    for (int j = 0; j <increments; j++) {
+      t = 1-(float(k2)+kSteps*float(j))/float(E_ref.polylines.get(i).size()-1);
+      if (doSampleSize){
+        if (f1(t)>sizeFilter) {
+          E.vertex(p1.x+step.x*j+tan.x*dir*f1(t), p1.y+step.y*j+tan.y*dir*f1(t));
+        }
+    } else {
+      E.vertex(p1.x+step.x*j+tan.x*dir*f1(t), p1.y+step.y*j+tan.y*dir*f1(t));
+    }
+    dir*= -1;
+  }
+}
+E.endShape();
+}
+
+
+float f1(float t) {
+  return sin(t*PI);
+}
+
+float f2(float t, float offset) {
+  float output = 0;
+  if (t<.2) {
+    output = f3(t, new PVector(0, 0), new PVector(offset, 1));
+  } else if (t>=.2 && t<.8) {
+    output = 1;
+  } else {
+    output = f3(t, new PVector(1-offset, 1), new PVector(1, 0));
+  }
+  return output;
+}
+
+float f3(float t, PVector P0, PVector P1) {
+  float output = (t-P0.x)*(P1.y-P0.y)/(P1.x-P0.x)+P0.y;
+  return output;
+}
+
+float f4(float t) {
+  return sin(pow(t, 4)*PI);
+}
+
+float f5(float t) {
+  return noise(t*3, polyTraced)*f2(t, .2);
+}
+
+float f6(float t) {
+  return f3(t, new PVector(0, 0), new PVector(1, .5));
+}
+
+
 void renderZigOnLines(PEmbroiderGraphics E, PEmbroiderGraphics E_ref) {
   for (int i=0; i<E_ref.polylines.size(); i++) {
-    renderZigPolyCircProf(E, E_ref, i, 10, 1);
-     renderZigPolyCircProf_REV(E, E_ref, i, 25, 1);
-    renderZigPolyCircProf(E, E_ref, i, 40, 1);
+
+    renderZigPolyCircProf(E, E_ref, i, hatchSpacing/4, 1);
+    renderZigPolyCircProf_REV(E, E_ref, i, hatchSpacing/2, 1);
+    renderZigPolyCircProf(E, E_ref, i, hatchSpacing*5/8, 1);
+  }
+}
+
+void renderZigFUNOnLines(PEmbroiderGraphics E, PEmbroiderGraphics E_ref) {
+  for (int i=0; i<E_ref.polylines.size(); i++) {
+    renderZigPolyFUNProf(E, E_ref, i, hatchSpacing/8, 1, true);
+    renderZigPolyFUNProf_REV(E, E_ref, i, hatchSpacing*3/8, 1, true);
+    renderZigPolyFUNProf(E, E_ref, i, hatchSpacing*4/8, 1, false);
+    polyTraced++;
+  }
+}
+
+void testFuntion() {
+  for (int i = 0; i<100; i++) {
+    float val = float(i)/99.00;
+    println(f5(val));
   }
 }
 
