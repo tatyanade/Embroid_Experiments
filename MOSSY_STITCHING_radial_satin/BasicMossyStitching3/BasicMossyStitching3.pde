@@ -9,8 +9,8 @@ int frames = 0;
 
 boolean running = true;
 boolean debugging = false;
-float noiseOffset = 20;
-int diamOffset = 30;
+float noiseOffset = 50;
+int diamOffset = 60;
 int initDiam = 30;
 int loops = 10;
 float k_Global = 1;
@@ -26,11 +26,8 @@ void setup() {
   size(1200, 900); //100 px = 1 cm (so 14.2 cm is 1420px)
   PEmbroiderStart();
   E.stroke(255, 0, 0);
-  //drawMossyCircle2(E, width/2, height/2, initDiam+diam, initDiam, 1, inset_Global*3, inset_Global*3, 4, 1);
-  E.stroke(0, 255, 0);
-  //drawMossyCircle2(E, width/2, height/2, initDiam+diamOffset, initDiam, 1, inset_Global*2, inset_Global*2, 3, 5);
   E.stroke(0, 0, 255);
-  drawMossyCircle3(E, width/2, height/2, initDiam+diamOffset, initDiam, 1, inset_Global, inset_Global, 2, 2);
+  drawMossyCircle3(E, width/2, height/2, initDiam+diamOffset, initDiam, 1, inset_Global, inset_Global, 2, 5);
   E.stroke(0);
   drawMossyCircle3(E, width/2, height/2, initDiam+diamOffset, initDiam, 1, 0, 0, 1, 3);
   filterRect(E);
@@ -190,7 +187,7 @@ void drawMossyCircle3(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
   ///// stitching parameters ////
   E.noFill();
   E.strokeWeight(1);
-  E.setStitch(2, 5, 0);
+  E.setStitch(1, 2, 0);
   ///// stitching parameters ////
 
   float theta = random(10); // convert to radians
@@ -213,6 +210,8 @@ void drawMossyCircle3(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
     theta = 0;
     thSteps = theta;
     while (thSteps < PI*2+theta) {
+      float test = diam1+int(noiseLoop(1, thSteps/(2*PI), z+1)*offset)-extOffset-( diam2+int(noiseLoop(1, thSteps/(2*PI), z)*offset)+intOffset);
+      if (test > filterTest) {
         if (i%2 == 0) {
           //Exterior
           int offsetVal1 = int(noiseLoop(1, thSteps/(2*PI), z+1)*offset);
@@ -228,6 +227,7 @@ void drawMossyCircle3(PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
           PVector P2 = pol2cart(diam2+offsetVal2+intOffset, thSteps);
           E.line(P2.x, P2.y, P1.x, P1.y);
         }
+      }
       thSteps += thStep;//random(0,thStep);
       i++;
     }
@@ -332,12 +332,23 @@ PVector getND(PEmbroiderGraphics E, int ndIndex) {
   return null; //will return null if the index is outside the needle down list
 }
 
+void moveE(PEmbroiderGraphics E, PVector V){
+  for (int i=0; i<E.polylines.size(); i++) {
+    for (int j=0; j<E.polylines.get(i).size(); j++) {
+      E.polylines.get(i).get(j).add(V);
+    }
+  }
+}
 
+void moveE(PEmbroiderGraphics E, float x,float y){
+  moveE(E, new PVector(x,y));
+}
 
 void filterRect(PEmbroiderGraphics E) {
   PEmbroiderGraphics E_Ref = new PEmbroiderGraphics(this, width, height);
   E_Ref.rectMode(CENTER);
-  E_Ref.image(image,width/2-image.width/2, height/2-image.width/2);
+ // E_Ref.image(image,width/2-image.width/2, height/2-image.width/2);
+ E_Ref.rect(width/2,height/2,400,800);
  // E_Ref.visualize();
   for (int i=0; i<E.polylines.size(); i++) {
     ArrayList<PVector> collection =  new ArrayList<PVector>();
@@ -353,6 +364,7 @@ void filterRect(PEmbroiderGraphics E) {
 }
 
 void filterReline(PEmbroiderGraphics E) {
+  float minLength = 4;
   E.setStitch(10, 10000, 0);
   for (int i=0; i<E.polylines.size(); i++) {
     int polySize = E.polylines.get(i).size();
@@ -360,9 +372,12 @@ void filterReline(PEmbroiderGraphics E) {
       PVector P0 = E.polylines.get(i).get(0);
       PVector P1 = E.polylines.get(i).get(polySize-1);
       E.polylines.get(i).clear();
+      if(P0.copy().sub(P1).mag()>=minLength){
       E.polylines.get(i).add(P0);
       E.polylines.get(i).add(P1);
+      }
     }
   }
 }
+
 //////////////////////////////////////////////////////////////////////////////
