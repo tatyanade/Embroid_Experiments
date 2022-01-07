@@ -16,33 +16,21 @@ Pack p;
 
 void setup() {
   size(600, 600); //100 px = 1 cm (so 14.2 cm is 1420px)
-  if (!loop) {
-    noLoop();
-  }
   PEmbroiderStart();
-  p = new Pack(800,7,10);
-  
- 
+  p = new Pack(20,20,40);
   
 }
 
+int frames;
 
 void draw() {
   if (running) {
     background(100);
     p.run();
   } else {
-    E.translate(width/2,height/2);
-    E.scale(1.2);
-    E.translate(-width/2,-height/2);
-    for (int i=0; i<p.circles.size(); i++) {
-      Circle circ = p.circles.get(i);
-      drawKnot1(E,int(circ.radius),int(circ.position.x),int(circ.position.y));
-    }
     background(100);
-    E.optimize();
-    PEmbroiderWrite();
-    noLoop();
+    E.visualize(true,true,true,frames);
+    frames++;
   }
 }
 
@@ -50,7 +38,21 @@ void draw() {
 void keyPressed(){
   if(key == ' '){
     running = false;
+    for (int i=0; i<p.circles.size(); i++) {
+      Circle circ = p.circles.get(i);
+      E.circle(circ.position.x,circ.position.y,circ.diameter);
+      drawKnot1(E,circ.diameter/2,circ.position.x,circ.position.y);
+    }
   }
+}
+
+
+void mousePressed(){
+  p.circles.add(new Circle(mouseX,mouseY,random(20,40)));
+}
+
+void mouseDragged(){
+  p.circles.add(new Circle(mouseX,mouseY,random(20,40)));
 }
 
 
@@ -71,21 +73,20 @@ void PEmbroiderWrite() {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-/// Knot Functions
+//// Knot Functions
 
-void drawKnot1(PEmbroiderGraphics E, int rad, int x, int y){
+void drawKnot1(PEmbroiderGraphics E, float rad, float x, float y) {
   E.pushMatrix();
-  E.translate(x,y);
-  
-  //E.strokeWeight(4);
-  E.circle(0,0,rad*2);
-  
- // E.strokeWeight(1);
- // drawStarKnot(E, int(rad*1.3/2.00), 7); // .57
-  ////drawStarKnot(E, int(rad*25.0/35.0), 13); // .714
-  //E.rotate(PI/11);
-  //drawStarKnot(E, int(rad*30.0/35.0), 23); // .85
-  //drawStarKnot(E, int(rad*35.0/35.0), 23); // 1
+  E.translate(x, y);
+  E.setStitch(4,400,0);
+
+  E.circle(0, 0, rad*2);
+
+  E.strokeWeight(1);
+   drawStarKnot(E, int(rad/2), 7); // .57
+  drawStarKnot(E, int(rad*3/4), 13); // .714
+  E.rotate(PI/11);
+  drawStarKnot(E, int(rad), 21); // .85
   E.popMatrix();
 }
 
@@ -150,7 +151,6 @@ void connectPointsOnCircle(PEmbroiderGraphics E, float th1, float th2, int rad) 
 
 
 
-
 ///////////////// Original circle packing code from Alberto Giachino
 /// source page: http://www.codeplastic.com/2017/09/09/controlled-circle-packing-with-processing/
 
@@ -161,13 +161,21 @@ class Circle {
   PVector velocity;
   PVector acceleration;
 
-  float radius;
-  Circle(float x, float y, float rad,PVector initVel) {
+  float diameter;
+  Circle(float x, float y, float diam,PVector initVel) {
     acceleration = new PVector(0, 0);
     velocity = initVel;//PVector.random2D();
     position = new PVector(x, y);
-    radius = rad;
+    diameter = diam;
   }
+  
+  Circle(float x, float y, float diam){
+    acceleration = new PVector(0, 0);
+    velocity = PVector.random2D();
+    position = new PVector(x, y);
+    diameter = diam;
+  }
+  
   void applyForce(PVector force) {
     acceleration.add(force);
   }
@@ -177,7 +185,7 @@ class Circle {
     acceleration.mult(0);
   }
   void display() {
-    circle(position.x, position.y, radius);
+    circle(position.x, position.y, diameter);
   }
 }
 
@@ -215,12 +223,12 @@ class Pack {
   }
   void checkBorders(int i) {
     Circle circle_i=circles.get(i);
-    if (circle_i.position.x-circle_i.radius/2 < 0 || circle_i.position.x+circle_i.radius/2 > width)
+    if (circle_i.position.x-circle_i.diameter/2 < 0 || circle_i.position.x+circle_i.diameter/2 > width)
     {
       circle_i.velocity.x*=-1;
       circle_i.update();
     }
-    if (circle_i.position.y-circle_i.radius/2 < 0 || circle_i.position.y+circle_i.radius/2 > height)
+    if (circle_i.position.y-circle_i.diameter/2 < 0 || circle_i.position.y+circle_i.diameter/2 > height)
     {
       circle_i.velocity.y*=-1;
       circle_i.update();
@@ -232,7 +240,7 @@ class Pack {
       Circle circle_j = circles.get(j == circles.size() ? 0 : j);
       int count = 0;
       float d = PVector.dist(circle_i.position, circle_j.position);
-      if (d < circle_i.radius/2+circle_j.radius/2) {
+      if (d < circle_i.diameter/2+circle_j.diameter/2) {
         count++;
       }
       // Zero velocity if no neighbours
@@ -273,7 +281,7 @@ class Pack {
   PVector getSeparationForce(Circle n1, Circle n2) {
     PVector steer = new PVector(0, 0, 0);
     float d = PVector.dist(n1.position, n2.position);
-    if ((d > 0) && (d < n1.radius/2+n2.radius/2)) {
+    if ((d > 0) && (d < n1.diameter/2+n2.diameter/2)) {
       PVector diff = PVector.sub(n1.position, n2.position);
       diff.normalize();
       diff.div(d);

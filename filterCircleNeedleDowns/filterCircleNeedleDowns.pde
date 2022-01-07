@@ -2,17 +2,15 @@ import processing.embroider.*;
 PEmbroiderGraphics E;
 
 void setup() {
-  size (400, 400);
+  size (800, 800);
 
   E = new PEmbroiderGraphics(this, width, height);
   E.setPath(sketchPath("filterCircles.pes"));
 
-  // Start rendering to the PEmbroiderer.
   E.beginDraw();
   E.fill(0);
-  // E.stroke(180, 0, 0);
   E.noStroke();
-  E.setStitch(5,12,5);
+  E.setStitch(5, 12, 5);
   E.toggleResample(true);
   E.hatchMode(E.CROSS);
   E.hatchSpacing(5);
@@ -24,31 +22,25 @@ void setup() {
 
   PVector[] centers = new PVector[filterCircs];
   float [] rads = new float[filterCircs];
-  
-    for(int i = 0; i<filterCircs; i++){
-  centers[i] = new PVector(random(0,width), random(0,height));
-  rads[i] = random(50,100);
-    }
 
-  filterCircles(E, centers, rads);
-  
-  for(int i = 0; i<centers.length; i++){
+  for (int i = 0; i<filterCircs; i++) {
+    centers[i] = new PVector(random(0, width), random(0, height));
+    rads[i] = random(50, 100);
+  }
+
+  filterCircles(E, centers, rads); ////////////// Filtering Happens Here <----------------------------------------
+
+  for (int i = 0; i<centers.length; i++) {
     pushStyle();
     noFill();
     E.noFill();
     E.stroke(30);
-    E.circle(centers[i].x,centers[i].y,rads[i]*2);
+    E.circle(centers[i].x, centers[i].y, rads[i]*2);
     popStyle();
   }
-  
- // E.optimize()
+
   E.visualize(true, true, true); // Display (preview) the embroidery onscreen.
   E.endDraw();
-}
-
-void draw() {
-  //background(180);
-  //E.visualize(true, true, true, frameCount*4);
 }
 
 
@@ -71,7 +63,7 @@ void filterCircles(PEmbroiderGraphics E, PVector[] centers, float[] rads) {
     for (int j=1; j<E.polylines.get(i).size()-1; j++) {
       PVector needleLoc0 = E.polylines.get(i).get(j).copy();
       boolean doInclude = true;
-      
+
       for (int l = 0; l < centers.length; l++) {
         float dist = needleLoc0.copy().sub(centers[l]).mag();//centers[l]).mag();
         doInclude = doInclude && dist>=rads[l];
@@ -89,9 +81,8 @@ void filterCircles(PEmbroiderGraphics E, PVector[] centers, float[] rads) {
     }
     println(collection);
     E.polylines.get(i).removeAll(collection);
-
-    }
   }
+}
 
 void filterND(PEmbroiderGraphics E, float intRad, float edgRad) {
   PVector center = new PVector(width/2, height/2);
