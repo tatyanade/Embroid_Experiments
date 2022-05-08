@@ -244,12 +244,6 @@ void drawMossyCircle( PEmbroiderGraphics E, int x, int y, int diam1, int diam2, 
       int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*offset);
       PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
       E.vertex(p.x, p.y);
-
-      //if (i%2 == 0) {
-      // connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
-      //} else {
-      // connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
-      //}
       thSteps += thStep;//random(0,thStep);
       i++;
     }
@@ -301,12 +295,6 @@ void drawMossyCircle_CULL( PEmbroiderGraphics E, int x, int y, int diam1, int di
     int offsetOut = int(noiseLoop(1, thSteps/(2*PI), 0+z)*50.00);
     PVector p = getPointOnRadius(thSteps, diam1/2+offsetOut);
     E.vertex(p.x, p.y);
-
-    //if (i%2 == 0) {
-    // connect2CircleVertex(E, thSteps, thSteps+theta, diam1/2+offsetOut, diam2/2+offsetIn);
-    //} else {
-    // connect2CircleVertex(E, thSteps+theta, thSteps, diam2/2+offsetIn, diam1/2+offsetOut);
-    //}
     thSteps += thStep;//random(0,thStep);
     i++;
   }

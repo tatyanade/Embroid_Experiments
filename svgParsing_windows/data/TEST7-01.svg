@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="800" viewBox="0 0 800 800">
+  <line x1="250" y1="415.25" x2="461.25" y2="377.75" fill="none" stroke="#4c3534" stroke-miterlimit="10" stroke-width="3"/>
+  <line x1="302.5" y1="289" x2="302.5" y2="556.5" fill="none" stroke="#4c3534" stroke-miterlimit="10"/>
+  <line x1="400" y1="375.25" x2="232.86" y2="498.29" fill="none" stroke="#4c3534" stroke-miterlimit="10" stroke-width="9"/>
+  <image width="1024" height="1024" transform="translate(-112 -111.75)" xlink:href="TEST71.png"/>
+</svg>

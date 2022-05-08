@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <g>
+    <line x1="253.02" y1="142.89" x2="577.61" y2="207.52" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="172.48" x2="577.61" y2="237.11" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="202.07" x2="577.61" y2="266.7" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="231.66" x2="577.61" y2="296.28" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="261.25" x2="577.61" y2="325.87" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="290.83" x2="577.61" y2="355.46" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="320.42" x2="577.61" y2="385.05" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="350.01" x2="577.61" y2="414.64" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="379.6" x2="577.61" y2="444.23" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="409.19" x2="577.61" y2="473.81" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="438.77" x2="577.61" y2="503.4" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="468.36" x2="577.61" y2="532.99" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <line x1="253.02" y1="497.95" x2="577.61" y2="562.58" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,527.54c132.29,33.69,270.47,70.36,324.59,64.63" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,557.13C385,590.21,524.64,627,577.61,621.75" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,586.72c.37,4.91,260.93,94.55,324.59,64.62" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,616.3c4.28,10,263.62,115.16,324.59,64.63" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,645.89C254.58,667,524.1,776.52,577.61,710.52" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+    <path d="M253,675.48c15.23,16.23,232.79,132.14,324.59,64.63" style="fill: none;stroke: #231f20;stroke-miterlimit: 10"/>
+  </g>
+  <circle cx="254.45" cy="144.33" r="4.99" style="fill: #231f20"/>
+  <polygon points="57.76 72.96 210.65 100.84 179.39 65.36 259.44 50.16 273.15 78.88 321.3 64.52 285.82 23.13 230.92 34.11 44.24 29.04 57.76 72.96" style="fill: #231f20"/>
+</svg>
